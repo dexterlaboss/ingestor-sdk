@@ -1,0 +1,103 @@
+[package]
+name = "solana-block-decoder"
+version = "2.0.0"
+description = "Solana Block Decoder"
+authors = ["Aurimas Narkevicius <aurimas.n@dexterlab.com>"]
+license = "Apache-2.0"
+repository = "https://github.com/dexterlaboss/solana-lite-rpc-storage-ingestor"
+homepage = "https://dexterlab.com"
+edition = "2021"
+
+[dependencies]
+Inflector = { workspace = true }
+bincode = { workspace = true }
+bytes = { workspace = true }
+bzip2 = { workspace = true }
+enum-iterator = { workspace = true }
+flate2 = { workspace = true }
+#goauth = "0.13.1"
+#http = "0.2.8"
+#hyper = "0.14.20"
+#hyper-proxy = "0.9.1"
+log = { workspace = true }
+prost = { workspace = true }
+serde = { workspace = true }
+serde_derive = { workspace = true }
+serde_json = { workspace = true }
+#borsh = "0.9.1"
+#borsh-derive = "0.9.1"
+borsh = "1.5.3"
+borsh-derive = "1.5.3"
+bs58 = { workspace = true }
+base64 = { workspace = true }
+lazy_static = { workspace = true }
+num-derive = "0.3"
+num-traits = { version = "0.2", default-features = true, features = ["i128", "std"] }
+generic-array = { version = "0.14.4", default-features = false, features = ["serde", "more_lengths"], optional = false }
+bytemuck = { version = "1.8.0", features = ["derive"] }
+#smpl_jwt = "0.7.1"
+#solana-metrics = { path = "../metrics", version = "=1.15.0" }
+#solana-sdk = { path = "../sdk", version = "=1.15.0" }
+solana-account-decoder = { workspace = true }
+#solana-account-decoder = "=2.0.19"
+solana-transaction-status = { workspace = true }
+solana-program = {workspace = true}
+solana-sdk = { workspace = true }
+#solana-sdk = "=2.0.19"
+#solana-storage-proto = "=2.0.19"
+solana-storage-writer = { workspace = true }
+#solana-storage-encoder.proto = { path = "../storage-encoder.proto", version = "=1.15.0" }
+#solana-transaction-status = { path = "../transaction-status", version = "=1.15.0" }
+thiserror = { workspace = true }
+#tokio = "1"
+#tonic = { version = "0.8.0", features = ["tls", "transport"] }
+zstd = { workspace = true }
+chrono = { version = "0.4.22", features = ["serde"] }
+spl-memo = { version = "=3.0.1", features = ["no-entrypoint"] }
+#hdrs = "0.1.4"
+
+# Unused deps:
+#console = "0.15.0"
+#dotenv = "0.15.0"
+#env_logger = "0.9.0"
+#envy = "0.4.2"
+#futures = "0.3.24"
+#jsonrpc-core = "18.0.0"
+#pretty-hex = "0.3.0"
+#prost-types = "0.11.1"
+#sasl2-sys = { version = "0.1.20", features = [ "vendored" ] }
+#solana-storage-proto = { workspace = true }
+
+## openssl is a dependency of the goauth and smpl_jwt crates, but explicitly
+## declare it here as well to activate the "vendored" feature that builds OpenSSL
+## statically...
+#[target."cfg(not(windows))".dependencies]
+#openssl = { version = "0.10", features = ["vendored"] }
+## ...except on Windows to avoid having to deal with getting CI past a build-time
+## Perl dependency
+#[target."cfg(windows)".dependencies]
+#openssl = { version = "0.10", features = [] }
+
+
+[dependencies.tokio]
+features = ["rt-multi-thread", "macros", "io-util"]
+version = "1.11.0"
+
+[lib]
+crate-type = ["lib"]
+#path = "src/encoder"
+name = "solana_block_decoder"
+
+[build-dependencies]
+rustc_version = { workspace = true }
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+#[[bin]]
+#name = "sol-block-encoder"
+#path = "src/bin/sol-block-encoder.rs"
+#
+#[[bin]]
+#name = "sol-tx-encoder"
+#path = "src/bin/sol-tx-encoder.rs"

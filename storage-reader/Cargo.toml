@@ -1,0 +1,36 @@
+[package]
+name = "solana-storage-reader"
+version = "2.0.0"
+description = "Solana abstract storage reader library"
+authors = ["Aurimas Narkevicius <aurimas.n@dexterlab.com>"]
+license = "AGPL-3"
+repository = "https://github.com/dexterlaboss/solana-lite-rpc-storage-ingestor"
+homepage = "https://dexterlab.com"
+edition = "2021"
+
+[dependencies]
+async-trait = { workspace = true }
+log = { workspace = true }
+solana-sdk = { workspace = true }
+solana-transaction-status = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_derive = { workspace = true }
+enum-iterator = { workspace = true }
+bzip2 = { workspace = true }
+flate2 = { workspace = true }
+zstd = { workspace = true }
+bincode = { workspace = true }
+
+# Unused deps:
+#md5 = { workspace = true }
+#solana-storage-utils = { workspace = true }
+
+
+[lib]
+crate-type = ["lib"]
+name = "solana_storage_reader"
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]

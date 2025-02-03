@@ -1,0 +1,70 @@
+[package]
+name = "solana-hbase-writer"
+version = "2.0.0"
+description = "Solana HBase storage writer library"
+authors = ["Aurimas Narkevicius <aurimas.n@dexterlab.com>"]
+license = "AGPL-3"
+repository = "https://github.com/dexterlaboss/solana-lite-rpc-storage-ingestor"
+homepage = "https://dexterlab.com"
+edition = "2021"
+
+[dependencies]
+async-trait = { workspace = true }
+hbase-thrift = "1.1.0"
+thrift = "0.15.0"
+
+backoff = { version = "0.4.0", features = ["tokio"] }
+bincode = { workspace = true }
+bytes = { workspace = true }
+enum-iterator = { workspace = true }
+bzip2 = { workspace = true }
+flate2 = { workspace = true }
+zstd = { workspace = true }
+futures = { workspace = true }
+http = { workspace = true }
+hyper = { workspace = true }
+log = { workspace = true }
+prost = { workspace = true }
+serde = { workspace = true }
+serde_derive = { workspace = true }
+memcache = "0.17.2"
+#solana-metrics = { workspace = true }
+solana-sdk = { workspace = true }
+solana-storage-writer = { workspace = true }
+solana-storage-proto = { workspace = true }
+#solana-storage-proto-utils = {workspace = true}
+solana-storage-utils = { workspace = true }
+solana-transaction-status = { workspace = true }
+#solana-block-decoder = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+md5 = { workspace = true }
+
+moka = { version = "0.12.7", features = ["sync"] }
+
+
+# Unused deps:
+#goauth = "0.13.1"
+#hyper-proxy = "0.9.1"
+#prost-types = "0.11.1"
+#smpl_jwt = "0.7.1"
+#solana-storage-reader = { workspace = true }
+#tonic = { version = "0.8.0", features = ["tls", "transport"] }
+
+
+# openssl is a dependency of the goauth and smpl_jwt crates, but explicitly
+# declare it here as well to activate the "vendored" feature that builds OpenSSL
+# statically...
+[target."cfg(not(windows))".dependencies]
+openssl = { version = "0.10", features = ["vendored"] }
+# ...except on Windows to avoid having to deal with getting CI past a build-time
+# Perl dependency
+[target."cfg(windows)".dependencies]
+openssl = { version = "0.10", features = [] }
+
+[lib]
+crate-type = ["lib"]
+name = "solana_hbase_writer"
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]

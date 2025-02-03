@@ -1,0 +1,24 @@
+[package]
+name = "solana-storage-utils"
+version = "2.0.0"
+description = "Solana storage utils library"
+authors = ["Aurimas Narkevicius <aurimas.n@dexterlab.com>"]
+license = "AGPL-3"
+repository = "https://github.com/dexterlaboss/solana-lite-rpc-storage-ingestor"
+homepage = "https://dexterlab.com"
+edition = "2021"
+
+[dependencies]
+solana-sdk = { workspace = true }
+solana-transaction-status = { workspace = true }
+md5 = { workspace = true }
+serde = { workspace = true }
+serde_derive = { workspace = true }
+log = { workspace = true }
+
+[lib]
+crate-type = ["lib"]
+name = "solana_storage_utils"
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
