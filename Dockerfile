@@ -1,11 +1,16 @@
-FROM rust:1.64 as build
+FROM rust:1.84-slim-bullseye AS build
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
     apt-utils \
     software-properties-common \
     cmake \
+    build-essential \
     libclang-dev \
-    libudev-dev
+    libudev-dev \
+    libssl-dev \
+    libsasl2-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN USER=root cargo new --bin solana
 WORKDIR /solana
@@ -16,7 +21,7 @@ RUN cargo build --release
 
 
 
-FROM rust:1.64
+FROM debian:bullseye-slim
 
 RUN mkdir -p /solana
 
