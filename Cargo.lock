@@ -1784,7 +1784,7 @@ dependencies = [
 
 [[package]]
 name = "ingestor-kafka"
-version = "2.0.0"
+version = "2.0.3"
 dependencies = [
  "backoff",
  "base64 0.21.7",
@@ -3279,7 +3279,7 @@ dependencies = [
 
 [[package]]
 name = "solana-block-decoder"
-version = "2.0.0"
+version = "2.0.4"
 dependencies = [
  "Inflector",
  "base64 0.21.7",
@@ -3407,7 +3407,7 @@ dependencies = [
 
 [[package]]
 name = "solana-hbase-reader"
-version = "2.0.0"
+version = "2.0.4"
 dependencies = [
  "async-trait",
  "backoff",
@@ -3439,7 +3439,7 @@ dependencies = [
 
 [[package]]
 name = "solana-hbase-writer"
-version = "2.0.0"
+version = "2.0.4"
 dependencies = [
  "async-trait",
  "backoff",
@@ -3728,7 +3728,7 @@ checksum = "468aa43b7edb1f9b7b7b686d5c3aeb6630dc1708e86e31343499dd5c4d775183"
 
 [[package]]
 name = "solana-storage-proto"
-version = "2.0.3"
+version = "2.0.4"
 dependencies = [
  "bincode",
  "bs58 0.4.0",
@@ -3744,7 +3744,7 @@ dependencies = [
 
 [[package]]
 name = "solana-storage-reader"
-version = "2.0.0"
+version = "2.0.4"
 dependencies = [
  "async-trait",
  "bincode",
@@ -3763,7 +3763,7 @@ dependencies = [
 
 [[package]]
 name = "solana-storage-utils"
-version = "2.0.0"
+version = "2.0.4"
 dependencies = [
  "log",
  "md5",
@@ -3775,7 +3775,7 @@ dependencies = [
 
 [[package]]
 name = "solana-storage-writer"
-version = "2.0.0"
+version = "2.0.4"
 dependencies = [
  "async-trait",
  "bincode",

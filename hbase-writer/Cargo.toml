@@ -1,6 +1,6 @@
 [package]
 name = "solana-hbase-writer"
-version = "2.0.0"
+version = { workspace = true }
 description = "Solana HBase storage writer library"
 authors = ["Aurimas Narkevicius <aurimas.n@dexterlab.com>"]
 license = "AGPL-3"

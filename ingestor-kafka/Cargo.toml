@@ -1,6 +1,6 @@
 [package]
 name = "ingestor-kafka"
-version = "2.0.0"
+version = "2.0.3"
 description = "Solana Kafka block ingestor service"
 authors = ["Aurimas Narkevicius <aurimas.n@dexterlab.com>"]
 license = "Apache-2.0"

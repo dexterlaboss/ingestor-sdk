@@ -1,6 +1,6 @@
 [package]
 name = "solana-block-decoder"
-version = "2.0.0"
+version = { workspace = true }
 description = "Solana Block Decoder"
 authors = ["Aurimas Narkevicius <aurimas.n@dexterlab.com>"]
 license = "Apache-2.0"
