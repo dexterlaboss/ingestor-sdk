@@ -3,7 +3,7 @@ name = "solana-storage-reader"
 version = { workspace = true }
 description = "Solana abstract storage reader library"
 authors = ["Aurimas Narkevicius <aurimas.n@dexterlab.com>"]
-license = "AGPL-3"
+license = "AGPL-3.0-only"
 repository = "https://github.com/dexterlaboss/solana-lite-rpc-storage-ingestor"
 homepage = "https://dexterlab.com"
 edition = "2021"
