@@ -34,8 +34,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish solana-block-decoder to crates.io
-        run: cargo publish -p solana-block-decoder
+      - name: Publish solana-storage-utils to crates.io
+        run: cargo publish -p solana-storage-utils
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 
@@ -59,7 +59,7 @@ jobs:
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 
-      - name: Publish solana-storage-utils to crates.io
-        run: cargo publish -p solana-storage-utils
+      - name: Publish solana-block-decoder to crates.io
+        run: cargo publish -p solana-block-decoder
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
