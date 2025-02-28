@@ -964,6 +964,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "dexter-storage-proto"
+version = "2.0.10"
+dependencies = [
+ "bincode",
+ "bs58 0.4.0",
+ "enum-iterator",
+ "prost",
+ "protobuf-src",
+ "serde",
+ "solana-account-decoder",
+ "solana-sdk",
+ "solana-transaction-status",
+ "tonic-build",
+]
+
+[[package]]
 name = "dialoguer"
 version = "0.10.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1808,6 +1824,7 @@ dependencies = [
  "chrono",
  "clap",
  "console",
+ "dexter-storage-proto",
  "dotenv",
  "env_logger",
  "envy",
@@ -1826,7 +1843,6 @@ dependencies = [
  "solana-clap-utils",
  "solana-hbase-writer",
  "solana-sdk",
- "solana-storage-proto",
  "solana-storage-writer",
  "solana-transaction-status",
  "solana-version",
@@ -3290,7 +3306,7 @@ dependencies = [
 
 [[package]]
 name = "solana-block-decoder"
-version = "2.0.9"
+version = "2.0.10"
 dependencies = [
  "Inflector",
  "base64 0.21.7",
@@ -3418,13 +3434,14 @@ dependencies = [
 
 [[package]]
 name = "solana-hbase-reader"
-version = "2.0.9"
+version = "2.0.10"
 dependencies = [
  "async-trait",
  "backoff",
  "bincode",
  "bytes",
  "bzip2",
+ "dexter-storage-proto",
  "enum-iterator",
  "flate2",
  "hbase-thrift",
@@ -3438,7 +3455,6 @@ dependencies = [
  "serde",
  "serde_derive",
  "solana-sdk",
- "solana-storage-proto",
  "solana-storage-reader",
  "solana-storage-utils",
  "solana-transaction-status",
@@ -3450,13 +3466,14 @@ dependencies = [
 
 [[package]]
 name = "solana-hbase-writer"
-version = "2.0.9"
+version = "2.0.10"
 dependencies = [
  "async-trait",
  "backoff",
  "bincode",
  "bytes",
  "bzip2",
+ "dexter-storage-proto",
  "enum-iterator",
  "flate2",
  "futures",
@@ -3472,7 +3489,6 @@ dependencies = [
  "serde",
  "serde_derive",
  "solana-sdk",
- "solana-storage-proto",
  "solana-storage-utils",
  "solana-storage-writer",
  "solana-transaction-status",
@@ -3738,24 +3754,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "468aa43b7edb1f9b7b7b686d5c3aeb6630dc1708e86e31343499dd5c4d775183"
 
 [[package]]
-name = "solana-storage-proto"
-version = "2.0.9"
-dependencies = [
- "bincode",
- "bs58 0.4.0",
- "enum-iterator",
- "prost",
- "protobuf-src",
- "serde",
- "solana-account-decoder",
- "solana-sdk",
- "solana-transaction-status",
- "tonic-build",
-]
-
-[[package]]
 name = "solana-storage-reader"
-version = "2.0.9"
+version = "2.0.10"
 dependencies = [
  "async-trait",
  "bincode",
@@ -3774,7 +3774,7 @@ dependencies = [
 
 [[package]]
 name = "solana-storage-utils"
-version = "2.0.9"
+version = "2.0.10"
 dependencies = [
  "log",
  "md5",
@@ -3786,7 +3786,7 @@ dependencies = [
 
 [[package]]
 name = "solana-storage-writer"
-version = "2.0.9"
+version = "2.0.10"
 dependencies = [
  "async-trait",
  "bincode",

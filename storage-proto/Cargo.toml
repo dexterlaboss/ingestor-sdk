@@ -1,7 +1,6 @@
 [package]
-name = "solana-storage-proto"
-description = "Solana Storage Protobuf Definitions"
-documentation = "https://docs.rs/solana-storage-proto"
+name = "dexter-storage-proto"
+description = "Dexter Solana Storage Protobuf Definitions"
 version = { workspace = true }
 authors = { workspace = true }
 repository = { workspace = true }
@@ -23,7 +22,7 @@ enum-iterator = { workspace = true }
 
 [lib]
 crate-type = ["lib"]
-name = "solana_storage_proto"
+name = "dexter_storage_proto"
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]

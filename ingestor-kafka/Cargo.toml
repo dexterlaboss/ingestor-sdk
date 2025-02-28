@@ -46,7 +46,7 @@ solana-clap-utils = { workspace = true }
 #solana-clap-utils = "=2.0.19"
 solana-sdk = { workspace = true }
 #solana-sdk = "=2.0.19"
-solana-storage-proto = { workspace = true }
+dexter-storage-proto = { workspace = true }
 #solana-storage-proto = "=2.0.19"
 solana-version = { workspace = true }
 #solana-version = "=2.0.19"

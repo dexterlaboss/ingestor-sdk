@@ -32,7 +32,7 @@ use {
         pubkey::Pubkey,
         signature::Signature,
     },
-    solana_storage_proto::convert::{generated, tx_by_addr},
+    dexter_storage_proto::convert::{generated, tx_by_addr},
     solana_transaction_status::{
         ConfirmedBlock, ConfirmedTransactionStatusWithSignature,
         ConfirmedTransactionWithStatusMeta,
