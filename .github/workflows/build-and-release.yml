@@ -1,4 +1,4 @@
-name: Build and Release Solana Storage Ingestor SDK
+name: Build and Release Solana Lite RPC Storage Ingestor
 
 on:
   push:
@@ -11,38 +11,74 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install Rust
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y software-properties-common cmake build-essential libclang-dev libudev-dev libssl-dev libsasl2-dev
+
+      - name: Install Rust 1.84.0
         uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.84.0
 
       - name: Cache Cargo Dependencies
         uses: Swatinem/rust-cache@v2
         with:
-          key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+          key: cargo-${{ runner.os }}-rust-1.84.0-${{ hashFiles('**/Cargo.lock') }}
           save-if: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Build all crates once
         run: cargo build --release
 
-      - name: Publish crates in the correct order
+#      - name: Login to DockerHub
+#        uses: docker/login-action@v2
+#        with:
+#          username: ${{ secrets.DOCKER_USERNAME }}
+#          password: ${{ secrets.DOCKER_PASSWORD }}
+#
+#      - name: Build and push Docker image
+#        run: |
+#          docker build -t dexterlaboss/ingestor-kafka:${GITHUB_REF_NAME} .
+#          docker push dexterlaboss/ingestor-kafka:${GITHUB_REF_NAME}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          name: Release ${{ github.ref }}
+          body: 'Release of version ${{ github.ref }}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish solana-storage-utils to crates.io
+        run: cargo publish -p solana-storage-utils --no-verify
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-        run: |
-          publish_crate() {
-            crate_name=$1
-            echo "Publishing $crate_name..."
-            if cargo search "$crate_name" | grep -q "=${{ github.ref_name#v }}"; then
-              echo "$crate_name is already published. Skipping..."
-            else
-              cargo publish --package $crate_name --no-verify --allow-dirty || echo "Skipping $crate_name (possible dependency issue)"
-              sleep 10  # Prevent crates.io rate limits
-            fi
-          }
 
-          # Publish crates in correct dependency order
-          publish_crate dexter-storage-proto
-          publish_crate solana-storage-utils
-          publish_crate solana-block-decoder
-          publish_crate solana-hbase-reader
-          publish_crate solana-hbase-writer
-          publish_crate solana-storage-reader
-          publish_crate solana-storage-writer
+      - name: Publish dexter-storage-proto to crates.io
+        run: cargo publish -p dexter-storage-proto --no-verify
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+
+      - name: Publish solana-storage-reader to crates.io
+        run: cargo publish -p solana-storage-reader --no-verify
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+
+      - name: Publish solana-storage-writer to crates.io
+        run: cargo publish -p solana-storage-writer --no-verify
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+
+      - name: Publish solana-hbase-reader to crates.io
+        run: cargo publish -p solana-hbase-reader --no-verify
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+
+      - name: Publish solana-hbase-writer to crates.io
+        run: cargo publish -p solana-hbase-writer --no-verify
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+
+      - name: Publish solana-block-decoder to crates.io
+        run: cargo publish -p solana-block-decoder --no-verify
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
