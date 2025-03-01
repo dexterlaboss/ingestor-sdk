@@ -19,11 +19,16 @@ jobs:
         with:
           toolchain: 1.84.0
 
-      - name: Cache Cargo Dependencies
-        uses: Swatinem/rust-cache@v2
+      - name: Cache Cargo Dependencies and Build Artifacts
+        uses: actions/cache@v3
         with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
           key: cargo-${{ runner.os }}-rust-1.84.0-${{ hashFiles('**/Cargo.lock') }}
-          save-if: ${{ github.ref == 'refs/heads/main' }}
+          restore-keys: |
+            cargo-${{ runner.os }}-rust-1.84.0-
 
       - name: Build all crates once
         run: cargo build --release
