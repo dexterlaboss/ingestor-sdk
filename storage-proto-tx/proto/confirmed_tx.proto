@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package solana.storage.confirmed_tx;
+
+import "confirmed_block.proto";
+
+message ConfirmedTransactionWithStatusMeta {
+  uint64 slot = 1;
+  solana.storage.ConfirmedBlock.ConfirmedTransaction tx_with_meta = 2;
+  solana.storage.ConfirmedBlock.UnixTimestamp block_time = 3;
+}

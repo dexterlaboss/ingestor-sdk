@@ -1,5 +1,5 @@
 use {
-    solana_storage_writer::{
+    solana_storage_utils::{
         compression::{compress_best, compress, CompressionMethod},
     },
     log::*,

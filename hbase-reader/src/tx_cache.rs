@@ -6,6 +6,8 @@ use {
     },
     solana_storage_reader::{
         Error, Result,
+    },
+    solana_storage_utils::{
         compression::{decompress},
     },
     memcache::Client as MemcacheClient,

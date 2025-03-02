@@ -1,5 +1,5 @@
 [package]
-name = "dexter-storage-proto"
+name = "dexter-storage-proto-tx"
 description = "Dexter Solana Storage Protobuf Definitions"
 version = { workspace = true }
 authors = { workspace = true }
@@ -16,19 +16,22 @@ serde = { workspace = true }
 solana-account-decoder = { workspace = true }
 solana-sdk = { workspace = true }
 solana-transaction-status = { workspace = true }
+solana-storage-proto = { workspace = true }
 
 [dev-dependencies]
 enum-iterator = { workspace = true }
 
+
 [lib]
 crate-type = ["lib"]
-name = "dexter_storage_proto"
+name = "dexter_storage_proto_tx"
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
 
 [build-dependencies]
 tonic-build = { workspace = true }
+serde_json = "1.0"
 
 # windows users should install the protobuf compiler manually and set the PROTOC
 # envar to point to the installed binary

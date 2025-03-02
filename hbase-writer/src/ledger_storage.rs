@@ -29,7 +29,12 @@ use {
         pubkey::Pubkey,
         sysvar::is_sysvar_id,
     },
-    dexter_storage_proto::convert::{generated, tx_by_addr},
+    // dexter_storage_proto_tx::convert::*,
+    dexter_storage_proto_tx::convert::{confirmed_tx, generated},
+    solana_storage_proto::convert::{
+        // generated,
+        tx_by_addr
+    },
     solana_transaction_status::{
         extract_memos::extract_and_fmt_memos,
         ConfirmedTransactionWithStatusMeta,

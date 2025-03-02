@@ -17,11 +17,6 @@ thiserror = { workspace = true }
 tokio = { workspace = true }
 serde = { workspace = true }
 serde_derive = { workspace = true }
-enum-iterator = { workspace = true }
-bzip2 = { workspace = true }
-flate2 = { workspace = true }
-zstd = { workspace = true }
-bincode = { workspace = true }
 
 # Unused deps:
 #md5 = { workspace = true }

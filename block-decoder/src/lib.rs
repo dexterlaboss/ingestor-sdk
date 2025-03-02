@@ -1,5 +1,5 @@
 use {
-    solana_storage_writer::compression::compress_best,
+    solana_storage_utils::compression::compress_best,
     solana_transaction_status::{
         BlockEncodingOptions,
         UiTransactionEncoding,

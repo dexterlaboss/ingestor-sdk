@@ -46,6 +46,7 @@ solana-sdk = { workspace = true }
 #solana-sdk = "=2.0.19"
 #solana-storage-proto = "=2.0.19"
 solana-storage-writer = { workspace = true }
+solana-storage-utils = { workspace = true }
 #solana-storage-encoder.proto = { path = "../storage-encoder.proto", version = "=1.15.0" }
 #solana-transaction-status = { path = "../transaction-status", version = "=1.15.0" }
 thiserror = { workspace = true }

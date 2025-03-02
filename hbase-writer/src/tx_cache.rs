@@ -1,7 +1,7 @@
 #![allow(clippy::integer_arithmetic)]
 
 use {
-    solana_storage_writer::{
+    solana_storage_utils::{
         compression::{compress_best},
     },
     memcache::{Client, MemcacheError},

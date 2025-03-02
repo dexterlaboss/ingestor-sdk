@@ -15,6 +15,11 @@ md5 = { workspace = true }
 serde = { workspace = true }
 serde_derive = { workspace = true }
 log = { workspace = true }
+enum-iterator = { workspace = true }
+bzip2 = { workspace = true }
+flate2 = { workspace = true }
+zstd = { workspace = true }
+bincode = { workspace = true }
 
 [lib]
 crate-type = ["lib"]

@@ -3,7 +3,7 @@ use {
         hbase_error::Error,
         hbase::*,
     },
-    solana_storage_reader::{
+    solana_storage_utils::{
         compression::{decompress},
     },
     log::*,
