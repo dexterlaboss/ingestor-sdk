@@ -17,7 +17,6 @@ use {
         hbase_error,
         connection,
         hbase,
-        deserializer,
     },
     async_trait::async_trait,
     log::*,
@@ -33,7 +32,7 @@ use {
         signature::Signature,
     },
     // dexter_storage_proto_tx::convert::*,
-    dexter_storage_proto_tx::convert::{confirmed_tx, generated},
+    dexter_storage_proto_tx::convert::{generated},
     solana_storage_proto::convert::{
         // generated,
         tx_by_addr
@@ -92,6 +91,7 @@ pub struct LedgerStorage {
 }
 
 impl LedgerStorage {
+    #[allow(dead_code)]
     pub async fn new(
         read_only: bool,
         timeout: Option<std::time::Duration>,
@@ -111,6 +111,7 @@ impl LedgerStorage {
             .await
     }
 
+    #[allow(dead_code)]
     pub async fn new_with_config(
         config: LedgerStorageConfig,
         // TODO: Implement metrics

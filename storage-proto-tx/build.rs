@@ -24,7 +24,6 @@ fn main() -> Result<(), std::io::Error> {
     let solana_proto_path = get_third_party_crate_path("solana-storage-proto")
         .expect("Failed to locate solana-storage-proto crate");
 
-    // If you're using protobuf_src for building protoc:
     const PROTOC_ENVAR: &str = "PROTOC";
     if std::env::var(PROTOC_ENVAR).is_err() {
         #[cfg(not(windows))]
@@ -47,7 +46,6 @@ fn main() -> Result<(), std::io::Error> {
             ".solana.storage.ConfirmedBlock.UnixTimestamp",
             "::solana_storage_proto::convert::generated::UnixTimestamp",
         )
-        // .compile(&[proto_file], &[proto_base_path])?;
         .compile(&[proto_file], &[proto_base_path, solana_proto_base_path])?;
 
     Ok(())

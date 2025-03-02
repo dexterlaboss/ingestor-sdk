@@ -29,10 +29,10 @@ use {
         pubkey::Pubkey,
         sysvar::is_sysvar_id,
     },
-    // dexter_storage_proto_tx::convert::*,
-    dexter_storage_proto_tx::convert::{confirmed_tx, generated},
+    dexter_storage_proto_tx::convert::{
+        generated
+    },
     solana_storage_proto::convert::{
-        // generated,
         tx_by_addr
     },
     solana_transaction_status::{

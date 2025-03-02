@@ -8,6 +8,7 @@ use {
 
 pub const DEFAULT_ADDRESS: &str = "127.0.0.1:9090";
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct LedgerStorageConfig {
     pub read_only: bool,

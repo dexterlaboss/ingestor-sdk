@@ -4,8 +4,7 @@ use {
         ConfirmedTransactionWithStatusMeta,
     },
     std::{
-        convert::{TryFrom, TryInto},
-        str::FromStr,
+        convert::{TryFrom},
     },
 };
 
