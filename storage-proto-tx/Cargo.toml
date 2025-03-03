@@ -31,7 +31,7 @@ targets = ["x86_64-unknown-linux-gnu"]
 
 [build-dependencies]
 tonic-build = { workspace = true }
-serde_json = "1.0"
+serde_json = { workspace = true }
 
 # windows users should install the protobuf compiler manually and set the PROTOC
 # envar to point to the installed binary

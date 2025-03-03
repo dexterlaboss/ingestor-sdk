@@ -10,10 +10,9 @@ edition = "2021"
 
 [dependencies]
 async-trait = { workspace = true }
-hbase-thrift = "1.1.0"
-thrift = "0.15.0"
-
-backoff = { version = "0.4.0", features = ["tokio"] }
+hbase-thrift = { workspace = true }
+thrift = { workspace = true }
+backoff = { workspace = true, features = ["tokio"] }
 bincode = { workspace = true }
 bytes = { workspace = true }
 enum-iterator = { workspace = true }
@@ -26,20 +25,17 @@ log = { workspace = true }
 prost = { workspace = true }
 serde = { workspace = true }
 serde_derive = { workspace = true }
-memcache = "0.17.2"
-#solana-metrics = { workspace = true }
+memcache = { workspace = true }
 solana-sdk = { workspace = true }
 solana-storage-reader = { workspace = true }
-#dexter-storage-proto = { workspace = true }
 solana-storage-proto = { workspace = true }
 dexter-storage-proto-tx = { workspace = true }
-#solana-storage-proto-utils = {workspace = true}
 solana-storage-utils = { workspace = true }
 solana-transaction-status = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }
 
-moka = { version = "0.12.7", features = ["sync"] }
+#moka = { version = "0.12.7", features = ["sync"] }
 
 # Unused deps:
 #futures = "0.3.24"

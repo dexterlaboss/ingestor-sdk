@@ -10,10 +10,10 @@ edition = "2021"
 
 [dependencies]
 async-trait = { workspace = true }
-hbase-thrift = "1.1.0"
-thrift = "0.15.0"
+hbase-thrift = { workspace = true }
+thrift = { workspace = true }
 
-backoff = { version = "0.4.0", features = ["tokio"] }
+backoff = { workspace = true, features = ["tokio"] }
 bincode = { workspace = true }
 bytes = { workspace = true }
 enum-iterator = { workspace = true }
@@ -27,31 +27,18 @@ log = { workspace = true }
 prost = { workspace = true }
 serde = { workspace = true }
 serde_derive = { workspace = true }
-memcache = "0.17.2"
-#solana-metrics = { workspace = true }
+memcache = { workspace = true }
 solana-sdk = { workspace = true }
 solana-storage-writer = { workspace = true }
-#dexter-storage-proto = { workspace = true }
 solana-storage-proto = { workspace = true }
 dexter-storage-proto-tx = { workspace = true }
-#solana-storage-proto-utils = {workspace = true}
 solana-storage-utils = { workspace = true }
 solana-transaction-status = { workspace = true }
-#solana-block-decoder = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }
 md5 = { workspace = true }
 
-moka = { version = "0.12.7", features = ["sync"] }
-
-
-# Unused deps:
-#goauth = "0.13.1"
-#hyper-proxy = "0.9.1"
-#prost-types = "0.11.1"
-#smpl_jwt = "0.7.1"
-#solana-storage-reader = { workspace = true }
-#tonic = { version = "0.8.0", features = ["tls", "transport"] }
+#moka = { version = "0.12.7", features = ["sync"] }
 
 
 # openssl is a dependency of the goauth and smpl_jwt crates, but explicitly
