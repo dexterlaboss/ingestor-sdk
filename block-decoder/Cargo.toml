@@ -27,7 +27,7 @@ base64 = { workspace = true }
 lazy_static = { workspace = true }
 num-derive = { workspace = true }
 num-traits = { workspace = true, default-features = true, features = ["i128", "std"] }
-generic-array = { workspace = true, default-features = false, features = ["serde", "more_lengths"], optional = false }
+#generic-array = { workspace = true, default-features = false, features = ["serde", "more_lengths"], optional = false }
 bytemuck = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 zstd = { workspace = true }

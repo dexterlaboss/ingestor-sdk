@@ -2778,7 +2778,6 @@ dependencies = [
  "chrono",
  "enum-iterator",
  "flate2",
- "generic-array",
  "lazy_static",
  "log",
  "num-derive 0.3.3",
