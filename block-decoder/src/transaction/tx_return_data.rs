@@ -1,4 +1,3 @@
-
 use {
     crate::{
         errors::{
@@ -13,6 +12,7 @@ use {
     std::{
         str::FromStr,
     },
+    base64::{Engine, prelude::BASE64_STANDARD},
 };
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize)]
@@ -28,7 +28,7 @@ impl TryFrom<UiTransactionReturnData> for TransactionReturnData {
         let program_id = Pubkey::from_str(&ui_return_data.program_id)
             .map_err(|_| ConversionError::InvalidProgramId)?;
 
-        let data = base64::decode(&ui_return_data.data.0)
+        let data = BASE64_STANDARD.decode(&ui_return_data.data.0)
             .map_err(|_| ConversionError::InvalidData)?;
 
         Ok(Self { program_id, data })

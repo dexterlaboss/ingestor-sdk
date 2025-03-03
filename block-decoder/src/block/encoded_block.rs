@@ -1,4 +1,3 @@
-
 use {
     solana_sdk::{
         clock::{Slot, UnixTimestamp},
@@ -15,6 +14,7 @@ use {
         UiTransactionStatusMeta,
     },
     serde_derive::{Serialize,Deserialize},
+    base64::{Engine, prelude::BASE64_STANDARD},
 };
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -61,7 +61,7 @@ impl EncodedTransaction {
                 .into_vec()
                 .ok()
                 .and_then(|bytes| bincode::deserialize(&bytes).ok()),
-            TransactionBinaryEncoding::Base64 => base64::decode(blob)
+            TransactionBinaryEncoding::Base64 => BASE64_STANDARD.decode(blob)
                 .ok()
                 .and_then(|bytes| bincode::deserialize(&bytes).ok()),
         };

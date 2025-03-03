@@ -34,6 +34,7 @@ use {
         UiMessage,
         UiTransactionEncoding,
     },
+    base64::{Engine, prelude::BASE64_STANDARD},
 };
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -101,7 +102,7 @@ impl DecodableWithMeta for VersionedTransaction {
             }
             UiTransactionEncoding::Base64 => {
                 if let EncodedTransaction::Binary(encoded_string, _) = encoded {
-                    let decoded_bytes = base64::decode(encoded_string).unwrap();
+                    let decoded_bytes = BASE64_STANDARD.decode(encoded_string).unwrap();
                     let decoded: Self::Decoded =
                         bincode::deserialize(&decoded_bytes).map_err(|_| DecodeError::DeserializeFailed)?;
                     Ok(decoded)

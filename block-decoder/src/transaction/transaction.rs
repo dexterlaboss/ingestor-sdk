@@ -23,6 +23,7 @@ use {
     std::{
         str::FromStr,
     },
+    base64::{Engine, prelude::BASE64_STANDARD},
 };
 
 #[derive(Debug, PartialEq, Default, Eq, Clone, Serialize, Deserialize)]
@@ -58,7 +59,7 @@ impl Decodable for Transaction {
                 Ok(transaction)
             }
             EncodedTransaction::Binary(s, TransactionBinaryEncoding::Base64) => {
-                let data = base64::decode(s)
+                let data = BASE64_STANDARD.decode(s)
                     .map_err(|_| DecodeError::DeserializeFailed)?;
                 let transaction: Transaction = bincode::deserialize(&data)
                     .map_err(|_| DecodeError::DeserializeFailed)?;

@@ -17,7 +17,7 @@ fn get_third_party_crate_path(crate_name: &str) -> Option<PathBuf> {
         .iter()
         .find(|package| package["name"] == crate_name)
         .and_then(|package| package["manifest_path"].as_str().map(PathBuf::from))
-        .and_then(|manifest_path| manifest_path.parent().map(|p| p.to_path_buf())) // ✅ FIXED HERE
+        .and_then(|manifest_path| manifest_path.parent().map(|p| p.to_path_buf()))
 }
 
 fn main() -> Result<(), std::io::Error> {
