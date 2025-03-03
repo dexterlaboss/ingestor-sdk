@@ -27,17 +27,13 @@ base64 = { workspace = true }
 lazy_static = { workspace = true }
 num-derive = { workspace = true }
 num-traits = { workspace = true, default-features = true, features = ["i128", "std"] }
-#generic-array = { workspace = true, default-features = false, features = ["serde", "more_lengths"], optional = false }
 bytemuck = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 zstd = { workspace = true }
 chrono = { workspace = true, features = ["serde"] }
 spl-memo = { workspace = true, features = ["no-entrypoint"] }
 
-#solana-account-decoder = { workspace = true }
 solana-transaction-status = { workspace = true }
-#solana-program = {workspace = true}
-#solana-sdk = { workspace = true }
 
 solana-storage-writer = { workspace = true }
 solana-storage-utils = { workspace = true }
@@ -53,16 +49,6 @@ solana-transaction-context = { workspace = true }
 solana-transaction-error = { workspace = true }
 solana-transaction-status-client-types = { workspace = true }
 solana-account-decoder-client-types = { workspace = true }
-
-## openssl is a dependency of the goauth and smpl_jwt crates, but explicitly
-## declare it here as well to activate the "vendored" feature that builds OpenSSL
-## statically...
-#[target."cfg(not(windows))".dependencies]
-#openssl = { version = "0.10", features = ["vendored"] }
-## ...except on Windows to avoid having to deal with getting CI past a build-time
-## Perl dependency
-#[target."cfg(windows)".dependencies]
-#openssl = { version = "0.10", features = [] }
 
 
 [dependencies.tokio]

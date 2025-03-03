@@ -14,17 +14,11 @@ use {
         },
     },
     serde_derive::{Deserialize, Serialize},
-    // solana_program::short_vec,
     solana_short_vec as short_vec,
-    // solana_sdk::{
-    //     signature::ParseSignatureError,
-    //     signature::Signature,
-    // },
     solana_signature::{
         ParseSignatureError,
         Signature,
     },
-    // solana_transaction_status::TransactionBinaryEncoding,
     solana_transaction_status_client_types::{
         TransactionBinaryEncoding,
     },

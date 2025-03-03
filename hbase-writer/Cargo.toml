@@ -39,23 +39,15 @@ solana-transaction-status-client-types = { workspace = true }
 solana-message = { workspace = true }
 solana-instruction = { workspace = true }
 
-#solana-sdk = { workspace = true }
 solana-storage-writer = { workspace = true }
 solana-storage-proto = { workspace = true }
 dexter-storage-proto-tx = { workspace = true }
 solana-storage-utils = { workspace = true }
 solana-transaction-status = { workspace = true }
 
-
-# openssl is a dependency of the goauth and smpl_jwt crates, but explicitly
-# declare it here as well to activate the "vendored" feature that builds OpenSSL
-# statically...
+# activate the "vendored" feature that builds OpenSSL statically
 [target."cfg(not(windows))".dependencies]
 openssl = { version = "0.10", features = ["vendored"] }
-# ...except on Windows to avoid having to deal with getting CI past a build-time
-# Perl dependency
-[target."cfg(windows)".dependencies]
-openssl = { version = "0.10", features = [] }
 
 [lib]
 crate-type = ["lib"]

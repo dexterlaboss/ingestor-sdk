@@ -17,8 +17,6 @@ tokio = { workspace = true }
 serde = { workspace = true }
 serde_derive = { workspace = true }
 
-#solana-sdk = { workspace = true }
-
 solana-clock = { workspace = true }
 solana-pubkey = { workspace = true }
 solana-signature = { workspace = true }
@@ -27,11 +25,6 @@ solana-transaction = { workspace = true }
 solana-transaction-error = { workspace = true }
 solana-serde = { workspace = true }
 solana-transaction-status-client-types = { workspace = true }
-
-# Unused deps:
-#md5 = { workspace = true }
-#solana-storage-utils = { workspace = true }
-
 
 [lib]
 crate-type = ["lib"]

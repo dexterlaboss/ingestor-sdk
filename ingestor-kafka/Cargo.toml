@@ -40,7 +40,6 @@ solana-hbase-writer = { workspace = true }
 solana-storage-writer = { workspace = true }
 solana-transaction-status = { workspace = true }
 solana-clap-utils = { workspace = true }
-#solana-sdk = { workspace = true }
 solana-storage-proto = { workspace = true }
 solana-version = { workspace = true }
 
@@ -56,6 +55,10 @@ features = ["cmake-build", "gssapi", "ssl", "sasl", "tokio"]
 version = "0.29.0"
 # git = "https://github.com/fede1024/rust-rdkafka"
 # rev = "65520c820565f9882475cc29cd6d149940515324"
+
+# activate the "vendored" feature that builds OpenSSL statically
+[target."cfg(not(windows))".dependencies]
+openssl = { version = "0.10", features = ["vendored"] }
 
 [lib]
 crate-type = ["lib"]

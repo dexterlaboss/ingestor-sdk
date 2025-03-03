@@ -16,18 +16,12 @@ use {
             transaction::{Transaction},
         }
     },
-    // solana_sdk::{
-    //     clock::{Slot, UnixTimestamp},
-    // },
     solana_clock::{
         Slot,
         UnixTimestamp,
     },
     solana_transaction_status::{
-        // UiTransactionEncoding,
         BlockEncodingOptions,
-        // TransactionDetails,
-        // Rewards,
     },
     solana_transaction_status_client_types::{
         UiTransactionEncoding,

@@ -1,10 +1,6 @@
 use {
     serde_derive::{Deserialize, Serialize},
-    // solana_program::short_vec,
     solana_short_vec as short_vec,
-    // solana_transaction_status::{
-    //     UiCompiledInstruction,
-    // },
     solana_transaction_status_client_types::{
         UiCompiledInstruction,
     }

@@ -12,8 +12,6 @@ use {
     },
     solana_transaction_status::{
         BlockEncodingOptions,
-        // TransactionDetails,
-        // UiTransactionEncoding,
     },
     solana_transaction_status_client_types::{
         UiTransactionEncoding,
@@ -35,9 +33,6 @@ use {
         io,
         io::{Read},
     },
-    // solana_sdk::{
-    //     pubkey::Pubkey,
-    // },
     solana_pubkey::{
         Pubkey,
     },

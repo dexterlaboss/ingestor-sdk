@@ -1,11 +1,4 @@
 use {
-    // solana_sdk::{
-    //     clock::{Slot, UnixTimestamp},
-    //     transaction::{
-    //         TransactionVersion,
-    //         VersionedTransaction,
-    //     },
-    // },
     solana_clock::{
         Slot,
         UnixTimestamp,
@@ -16,13 +9,6 @@ use {
             VersionedTransaction,
         },
     },
-    // solana_transaction_status::{
-    //     TransactionBinaryEncoding,
-    //     Rewards,
-    //     UiTransaction,
-    //     UiAccountsList,
-    //     UiTransactionStatusMeta,
-    // },
     solana_transaction_status_client_types::{
         TransactionBinaryEncoding,
         Rewards,

@@ -1518,6 +1518,7 @@ dependencies = [
  "log",
  "md5",
  "memcache",
+ "openssl",
  "prost",
  "rdkafka",
  "rustc_version",

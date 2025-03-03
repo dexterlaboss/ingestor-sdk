@@ -3,9 +3,6 @@ use {
         stored_confirmed_block::StoredConfirmedBlockTransaction,
     },
     serde::{Deserialize, Serialize},
-    // solana_sdk::{
-    //     clock::{Slot, UnixTimestamp},
-    // },
     solana_clock::{
         Slot,
         UnixTimestamp,

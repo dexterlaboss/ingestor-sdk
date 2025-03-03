@@ -22,13 +22,6 @@ use {
     // solana_metrics::Metrics,
     //-------------------------
     // solana_metrics::{datapoint_info, inc_new_counter_debug},
-    // solana_sdk::{
-    //     clock::{
-    //         Slot,
-    //     },
-    //     pubkey::Pubkey,
-    //     sysvar::is_sysvar_id,
-    // },
     solana_clock::{
         Slot,
     },

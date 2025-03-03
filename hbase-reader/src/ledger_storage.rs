@@ -21,13 +21,6 @@ use {
     // solana_metrics::Metrics,
     //-------------------------
     // solana_metrics::{datapoint_info, inc_new_counter_debug},
-    // solana_sdk::{
-    //     clock::{
-    //         Slot,
-    //     },
-    //     pubkey::Pubkey,
-    //     signature::Signature,
-    // },
     solana_clock::{
         Slot,
     },
@@ -45,7 +38,6 @@ use {
         ConfirmedBlock, ConfirmedTransactionStatusWithSignature,
         ConfirmedTransactionWithStatusMeta,
         TransactionByAddrInfo,
-        // TransactionStatus,
     },
     solana_transaction_status_client_types::{
         TransactionStatus,

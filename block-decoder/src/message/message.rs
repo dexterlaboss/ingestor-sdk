@@ -11,16 +11,7 @@ use {
         },
     },
     serde_derive::{Deserialize, Serialize},
-    // solana_program::short_vec,
     solana_short_vec as short_vec,
-    // solana_sdk::{
-    //     hash::Hash,
-    //     message::{
-    //         Message as SolanaMessage,
-    //         MessageHeader,
-    //     },
-    //     pubkey::Pubkey,
-    // },
     solana_hash::{
         Hash,
     },
@@ -29,7 +20,6 @@ use {
         MessageHeader,
     },
     solana_pubkey::Pubkey,
-    // solana_transaction_status::UiMessage,
     solana_transaction_status_client_types::{
         UiMessage,
     },

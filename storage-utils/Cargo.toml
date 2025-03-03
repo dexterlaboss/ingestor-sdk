@@ -19,7 +19,6 @@ flate2 = { workspace = true }
 zstd = { workspace = true }
 bincode = { workspace = true }
 
-#solana-sdk = { workspace = true }
 solana-transaction-status = { workspace = true }
 
 solana-clock = { workspace = true }
