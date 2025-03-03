@@ -2,7 +2,6 @@
 use {
     std::{
         time::{Duration},
-        num::NonZeroUsize,
     },
 };
 
@@ -14,7 +13,6 @@ pub struct LedgerStorageConfig {
     pub read_only: bool,
     pub timeout: Option<Duration>,
     pub address: String,
-    pub block_cache: Option<NonZeroUsize>,
     pub use_md5_row_key_salt: bool,
     pub enable_full_tx_cache: bool,
     pub disable_tx_fallback: bool,
@@ -27,7 +25,6 @@ impl Default for LedgerStorageConfig {
             read_only: true,
             timeout: None,
             address: DEFAULT_ADDRESS.to_string(),
-            block_cache: None,
             use_md5_row_key_salt: false,
             enable_full_tx_cache: false,
             disable_tx_fallback: false,

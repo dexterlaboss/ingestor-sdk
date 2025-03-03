@@ -27,7 +27,7 @@ pub trait LedgerStorageAdapter: Send + Sync {
 
     async fn get_confirmed_blocks(&self, start_slot: Slot, limit: usize) -> Result<Vec<Slot>>;
 
-    async fn get_confirmed_block(&self, slot: Slot, use_cache: bool) -> Result<ConfirmedBlock>;
+    async fn get_confirmed_block(&self, slot: Slot) -> Result<ConfirmedBlock>;
 
     async fn get_signature_status(&self, signature: &Signature) -> Result<TransactionStatus>;
 
