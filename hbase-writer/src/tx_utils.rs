@@ -1,13 +1,21 @@
 #![allow(clippy::integer_arithmetic)]
 
 use {
-    solana_sdk::{
-        pubkey::Pubkey,
-        message::{
-            VersionedMessage,
-            v0::LoadedAddresses,
-        },
-        instruction::CompiledInstruction,
+    // solana_sdk::{
+    //     pubkey::Pubkey,
+    //     message::{
+    //         VersionedMessage,
+    //         v0::LoadedAddresses,
+    //     },
+    //     instruction::CompiledInstruction,
+    // },
+    solana_pubkey::{
+        Pubkey,
+    },
+    solana_message::{
+        VersionedMessage,
+        v0::LoadedAddresses,
+        compiled_instruction::CompiledInstruction,
     },
     solana_transaction_status::{
         VersionedTransactionWithStatusMeta,

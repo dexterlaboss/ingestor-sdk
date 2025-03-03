@@ -26,14 +26,22 @@ prost = { workspace = true }
 serde = { workspace = true }
 serde_derive = { workspace = true }
 memcache = { workspace = true }
-solana-sdk = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+
+solana-pubkey = { workspace = true }
+solana-signature = { workspace = true }
+solana-clock = { workspace = true }
+solana-message = { workspace = true }
+solana-transaction = { workspace = true }
+solana-transaction-status-client-types = { workspace = true }
+
+#solana-sdk = { workspace = true }
 solana-storage-reader = { workspace = true }
 solana-storage-proto = { workspace = true }
 dexter-storage-proto-tx = { workspace = true }
 solana-storage-utils = { workspace = true }
 solana-transaction-status = { workspace = true }
-thiserror = { workspace = true }
-tokio = { workspace = true }
 
 #moka = { version = "0.12.7", features = ["sync"] }
 

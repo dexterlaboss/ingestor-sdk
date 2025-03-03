@@ -1,6 +1,13 @@
 use {
-    solana_account_decoder::parse_token::UiTokenAmount,
-    solana_transaction_status::{
+    // solana_account_decoder::parse_token::UiTokenAmount,
+    solana_account_decoder_client_types::{
+        token::UiTokenAmount,
+    },
+    // solana_transaction_status::{
+    //     UiTransactionTokenBalance,
+    //     option_serializer::OptionSerializer,
+    // },
+    solana_transaction_status_client_types::{
         UiTransactionTokenBalance,
         option_serializer::OptionSerializer,
     },
@@ -38,7 +45,7 @@ impl From<UiTransactionTokenBalance> for TransactionTokenBalance {
 }
 
 
-impl From<TransactionTokenBalance> for solana_transaction_status::TransactionTokenBalance {
+impl From<TransactionTokenBalance> for solana_transaction_status_client_types::TransactionTokenBalance {
     fn from(balance: TransactionTokenBalance) -> Self {
         Self {
             account_index: balance.account_index,

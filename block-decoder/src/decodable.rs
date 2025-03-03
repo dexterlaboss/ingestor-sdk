@@ -5,12 +5,18 @@ use {
             decode_error::DecodeError,
         }
     },
-    solana_sdk::{
-        transaction::{
-            TransactionVersion,
-        },
+    // solana_sdk::{
+    //     transaction::{
+    //         TransactionVersion,
+    //     },
+    // },
+    solana_transaction::{
+        versioned::TransactionVersion,
     },
-    solana_transaction_status::{
+    // solana_transaction_status::{
+    //     UiTransactionEncoding,
+    // },
+    solana_transaction_status_client_types::{
         UiTransactionEncoding,
     },
 };

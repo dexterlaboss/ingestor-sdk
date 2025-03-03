@@ -1,8 +1,15 @@
 use {
-    solana_sdk::{
-        pubkey::{Pubkey, ParsePubkeyError},
+    // solana_sdk::{
+    //     pubkey::{Pubkey, ParsePubkeyError},
+    // },
+    solana_pubkey::{
+        Pubkey,
+        ParsePubkeyError,
     },
-    solana_transaction_status::{
+    // solana_transaction_status::{
+    //     UiLoadedAddresses,
+    // },
+    solana_transaction_status_client_types::{
         UiLoadedAddresses,
     },
     serde::{
@@ -46,7 +53,7 @@ impl TryFrom<&UiLoadedAddresses> for LoadedAddresses {
     }
 }
 
-impl From<LoadedAddresses> for solana_sdk::message::v0::LoadedAddresses {
+impl From<LoadedAddresses> for solana_message::v0::LoadedAddresses {
     fn from(addresses: LoadedAddresses) -> Self {
         Self {
             writable: addresses.writable,

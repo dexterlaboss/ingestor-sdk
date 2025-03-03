@@ -8,15 +8,25 @@ use {
             CompiledInstruction,
         },
     },
-    solana_program::{
-        short_vec,
+    // solana_program::{
+    //     short_vec,
+    // },
+    solana_short_vec as short_vec,
+    // solana_sdk::{
+    //     message::{
+    //         MessageHeader,
+    //     },
+    //     pubkey::{Pubkey},
+    //     hash::{Hash},
+    // },
+    solana_message::{
+        MessageHeader,
     },
-    solana_sdk::{
-        message::{
-            MessageHeader,
-        },
-        pubkey::{Pubkey},
-        hash::{Hash},
+    solana_pubkey::{
+        Pubkey,
+    },
+    solana_hash::{
+        Hash,
     },
     serde::{
         de::{self, Deserializer, SeqAccess, Visitor},
@@ -178,11 +188,11 @@ impl<'de> Deserialize<'de> for VersionedMessage {
     }
 }
 
-impl From<VersionedMessage> for solana_sdk::message::VersionedMessage {
+impl From<VersionedMessage> for solana_message::VersionedMessage {
     fn from(msg: VersionedMessage) -> Self {
         match msg {
-            VersionedMessage::Legacy(m) => solana_sdk::message::VersionedMessage::Legacy(m.into()),
-            VersionedMessage::V0(m) => solana_sdk::message::VersionedMessage::V0(m.into()),
+            VersionedMessage::Legacy(m) => solana_message::VersionedMessage::Legacy(m.into()),
+            VersionedMessage::V0(m) => solana_message::VersionedMessage::V0(m.into()),
         }
     }
 }

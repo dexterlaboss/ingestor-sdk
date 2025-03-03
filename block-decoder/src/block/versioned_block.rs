@@ -11,10 +11,17 @@ use {
             versioned_transaction::VersionedTransactionWithStatusMeta,
         },
     },
-    solana_sdk::{
-        clock::{Slot, UnixTimestamp},
+    // solana_sdk::{
+    //     clock::{Slot, UnixTimestamp},
+    // },
+    solana_clock::{
+        Slot,
+        UnixTimestamp,
     },
-    solana_transaction_status::{
+    // solana_transaction_status::{
+    //     Rewards,
+    // },
+    solana_transaction_status_client_types::{
         Rewards,
     },
     thiserror::Error,

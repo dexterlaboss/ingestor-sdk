@@ -1,7 +1,10 @@
 
 use {
-    solana_sdk::{
-        pubkey::Pubkey,
+    // solana_sdk::{
+    //     pubkey::Pubkey,
+    // },
+    solana_pubkey::{
+        Pubkey,
     },
     std::{
         collections::HashSet,

@@ -5,13 +5,18 @@ use {
             decode_error::DecodeError,
         }
     },
-    solana_program::{
-        short_vec,
-    },
-    solana_sdk::{
-        pubkey::{Pubkey, ParsePubkeyError},
-    },
-    solana_transaction_status::{
+    // solana_program::{
+    //     short_vec,
+    // },
+    solana_short_vec as short_vec,
+    // solana_sdk::{
+    //     pubkey::{Pubkey, ParsePubkeyError},
+    // },
+    solana_pubkey::{Pubkey, ParsePubkeyError},
+    // solana_transaction_status::{
+    //     UiAddressTableLookup,
+    // },
+    solana_transaction_status_client_types::{
         UiAddressTableLookup,
     },
     serde::{
@@ -49,7 +54,7 @@ impl TryFrom<&UiAddressTableLookup> for MessageAddressTableLookup {
     }
 }
 
-impl From<MessageAddressTableLookup> for solana_sdk::message::v0::MessageAddressTableLookup {
+impl From<MessageAddressTableLookup> for solana_message::v0::MessageAddressTableLookup {
     fn from(lookup: MessageAddressTableLookup) -> Self {
         Self {
             account_key: lookup.account_key,

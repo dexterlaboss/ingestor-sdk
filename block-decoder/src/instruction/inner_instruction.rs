@@ -7,7 +7,7 @@ use {
         }
     },
     serde_derive::{Deserialize, Serialize},
-    solana_transaction_status::{
+    solana_transaction_status_client_types::{
         UiCompiledInstruction,
         UiInnerInstructions,
         UiInstruction,
@@ -65,7 +65,7 @@ impl From<UiCompiledInstruction> for InnerInstruction {
     }
 }
 
-impl From<InnerInstructions> for solana_transaction_status::InnerInstructions {
+impl From<InnerInstructions> for solana_transaction_status_client_types::InnerInstructions {
     fn from(instr: InnerInstructions) -> Self {
         Self {
             index: instr.index,
@@ -74,7 +74,7 @@ impl From<InnerInstructions> for solana_transaction_status::InnerInstructions {
     }
 }
 
-impl From<InnerInstruction> for solana_transaction_status::InnerInstruction {
+impl From<InnerInstruction> for solana_transaction_status_client_types::InnerInstruction {
     fn from(instr: InnerInstruction) -> Self {
         Self {
             instruction: instr.instruction.into(),

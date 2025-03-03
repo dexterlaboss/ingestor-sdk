@@ -1,9 +1,15 @@
 
 use {
     serde::{Deserialize, Serialize},
-    solana_sdk::{
-        signature::Signature,
-        transaction::{TransactionError},
+    // solana_sdk::{
+    //     signature::Signature,
+    //     transaction::{TransactionError},
+    // },
+    solana_signature::{
+        Signature,
+    },
+    solana_transaction_error::{
+        TransactionError,
     },
     solana_transaction_status::{
         TransactionByAddrInfo,

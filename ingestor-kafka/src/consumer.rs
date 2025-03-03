@@ -3,8 +3,12 @@ use {
         producer::KafkaProducer,
     },
     solana_transaction_status::{
-        UiTransactionEncoding,
+        // UiTransactionEncoding,
         BlockEncodingOptions,
+        // TransactionDetails,
+    },
+    solana_transaction_status_client_types::{
+        UiTransactionEncoding,
         TransactionDetails,
     },
     solana_block_decoder::{

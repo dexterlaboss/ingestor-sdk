@@ -1,9 +1,12 @@
 use {
     log::*,
-    solana_sdk::{
-        clock::{
-            Slot,
-        },
+    // solana_sdk::{
+    //     clock::{
+    //         Slot,
+    //     },
+    // },
+    solana_clock::{
+        Slot,
     },
     std::{
         boxed::Box,

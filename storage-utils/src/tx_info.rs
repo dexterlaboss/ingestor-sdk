@@ -1,13 +1,19 @@
 
 use {
     serde::{Deserialize, Serialize},
-    solana_sdk::{
-        clock::{
-            Slot,
-        },
-        transaction::{
-            TransactionError,
-        },
+    // solana_sdk::{
+    //     clock::{
+    //         Slot,
+    //     },
+    //     transaction::{
+    //         TransactionError,
+    //     },
+    // },
+    solana_clock::{
+        Slot,
+    },
+    solana_transaction_error::{
+        TransactionError,
     },
     solana_transaction_status::{
         TransactionConfirmationStatus,

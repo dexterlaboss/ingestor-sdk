@@ -1,10 +1,26 @@
 use {
     serde::{Deserialize, Serialize},
-    solana_sdk::{
-        clock::{Slot, UnixTimestamp},
-        message::v0::LoadedAddresses,
-        deserialize_utils::default_on_eof,
-        transaction::{TransactionError, VersionedTransaction},
+    // solana_sdk::{
+    //     clock::{Slot, UnixTimestamp},
+    //     message::v0::LoadedAddresses,
+    //     deserialize_utils::default_on_eof,
+    //     transaction::{TransactionError, VersionedTransaction},
+    // },
+    solana_clock::{
+        Slot,
+        UnixTimestamp,
+    },
+    solana_message::{
+        v0::LoadedAddresses,
+    },
+    solana_serde::{
+        default_on_eof,
+    },
+    solana_transaction::{
+        versioned::VersionedTransaction,
+    },
+    solana_transaction_error::{
+        TransactionError,
     },
     solana_transaction_status::{
         ConfirmedBlock,

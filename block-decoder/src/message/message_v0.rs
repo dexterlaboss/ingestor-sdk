@@ -14,17 +14,29 @@ use {
         },
     },
     serde_derive::{Deserialize, Serialize},
-    solana_program::short_vec,
-    solana_sdk::{
-        hash::Hash,
-        message::{
-            v0::Message as SolanaMessageV0,
-            MessageHeader,
-        },
-        pubkey::Pubkey,
-        transaction::TransactionVersion,
+    // solana_program::short_vec,
+    solana_short_vec as short_vec,
+    // solana_sdk::{
+    //     hash::Hash,
+    //     message::{
+    //         v0::Message as SolanaMessageV0,
+    //         MessageHeader,
+    //     },
+    //     pubkey::Pubkey,
+    //     transaction::TransactionVersion,
+    // },
+    solana_hash::{
+        Hash,
     },
-    solana_transaction_status::{
+    solana_message::{
+        v0::Message as SolanaMessageV0,
+        MessageHeader,
+    },
+    solana_pubkey::Pubkey,
+    solana_transaction::{
+        versioned::TransactionVersion,
+    },
+    solana_transaction_status_client_types::{
         UiMessage,
         UiTransactionEncoding,
     },

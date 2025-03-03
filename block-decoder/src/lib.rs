@@ -2,8 +2,11 @@ use {
     solana_storage_utils::compression::compress_best,
     solana_transaction_status::{
         BlockEncodingOptions,
-        UiTransactionEncoding,
+        // UiTransactionEncoding,
         VersionedConfirmedBlock as SolanaVersionedConfirmedBlock,
+    },
+    solana_transaction_status_client_types::{
+        UiTransactionEncoding,
     },
     block::{
         confirmed_block::ConfirmedBlock,

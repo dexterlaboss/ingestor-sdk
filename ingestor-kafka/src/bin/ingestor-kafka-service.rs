@@ -20,8 +20,11 @@ use {
     std::{
         collections::{HashSet},
     },
-    solana_sdk::{
-        pubkey::Pubkey,
+    // solana_sdk::{
+    //     pubkey::Pubkey,
+    // },
+    solana_pubkey::{
+        Pubkey,
     },
     clap::{
         value_t_or_exit,

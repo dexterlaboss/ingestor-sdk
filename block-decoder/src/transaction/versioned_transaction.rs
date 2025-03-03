@@ -25,12 +25,17 @@ use {
     serde::{
         Deserialize, Serialize,
     },
-    solana_program::short_vec,
-    solana_sdk::{
-        signature::Signature,
-        transaction::TransactionVersion,
+    // solana_program::short_vec,
+    solana_short_vec as short_vec,
+    // solana_sdk::{
+    //     signature::Signature,
+    //     transaction::TransactionVersion,
+    // },
+    solana_signature::Signature,
+    solana_transaction::{
+        versioned::TransactionVersion
     },
-    solana_transaction_status::{
+    solana_transaction_status_client_types::{
         UiMessage,
         UiTransactionEncoding,
     },
@@ -159,7 +164,7 @@ impl DecodableWithMeta for VersionedTransaction {
     }
 }
 
-impl From<VersionedTransaction> for solana_sdk::transaction::VersionedTransaction {
+impl From<VersionedTransaction> for solana_transaction::versioned::VersionedTransaction {
     fn from(tx: VersionedTransaction) -> Self {
         Self {
             signatures: tx.signatures,

@@ -1,9 +1,13 @@
 use {
     serde_derive::{Deserialize, Serialize},
-    solana_program::short_vec,
-    solana_transaction_status::{
+    // solana_program::short_vec,
+    solana_short_vec as short_vec,
+    // solana_transaction_status::{
+    //     UiCompiledInstruction,
+    // },
+    solana_transaction_status_client_types::{
         UiCompiledInstruction,
-    },
+    }
 };
 
 /// A compact encoding of an instruction.
@@ -36,7 +40,7 @@ impl From<UiCompiledInstruction> for CompiledInstruction {
     }
 }
 
-impl From<CompiledInstruction> for solana_sdk::instruction::CompiledInstruction {
+impl From<CompiledInstruction> for solana_message::compiled_instruction::CompiledInstruction {
     fn from(instr: CompiledInstruction) -> Self {
         Self {
             program_id_index: instr.program_id_index,

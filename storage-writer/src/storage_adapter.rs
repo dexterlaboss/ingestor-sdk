@@ -3,11 +3,17 @@ use {
         error::Error,
     },
     async_trait::async_trait,
-    solana_sdk::{
-        clock::{
-            Slot,
-        },
-        pubkey::Pubkey,
+    // solana_sdk::{
+    //     clock::{
+    //         Slot,
+    //     },
+    //     pubkey::Pubkey,
+    // },
+    solana_clock::{
+        Slot,
+    },
+    solana_pubkey::{
+        Pubkey,
     },
     solana_transaction_status::{
         VersionedConfirmedBlock,

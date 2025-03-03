@@ -3,15 +3,27 @@ use {
         error::Error,
     },
     async_trait::async_trait,
-    solana_sdk::{
-        clock::{Slot},
-        pubkey::Pubkey,
-        signature::Signature,
+    // solana_sdk::{
+    //     clock::{Slot},
+    //     pubkey::Pubkey,
+    //     signature::Signature,
+    // },
+    solana_clock::{
+        Slot,
+    },
+    solana_pubkey::{
+        Pubkey,
+    },
+    solana_signature::{
+        Signature,
     },
     solana_transaction_status::{
         ConfirmedBlock,
         ConfirmedTransactionStatusWithSignature,
         ConfirmedTransactionWithStatusMeta,
+        // TransactionStatus,
+    },
+    solana_transaction_status_client_types::{
         TransactionStatus,
     },
     std::{

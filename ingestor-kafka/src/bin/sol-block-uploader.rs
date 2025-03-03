@@ -12,8 +12,12 @@ use {
     },
     solana_transaction_status::{
         BlockEncodingOptions,
-        TransactionDetails,
+        // TransactionDetails,
+        // UiTransactionEncoding,
+    },
+    solana_transaction_status_client_types::{
         UiTransactionEncoding,
+        TransactionDetails,
     },
     solana_hbase_writer::{
         ledger_storage::LedgerStorage,
@@ -31,8 +35,11 @@ use {
         io,
         io::{Read},
     },
-    solana_sdk::{
-        pubkey::Pubkey,
+    // solana_sdk::{
+    //     pubkey::Pubkey,
+    // },
+    solana_pubkey::{
+        Pubkey,
     },
     clap::{value_t_or_exit, values_t, ArgMatches},
     serde::{

@@ -21,12 +21,21 @@ use {
     // solana_metrics::Metrics,
     //-------------------------
     // solana_metrics::{datapoint_info, inc_new_counter_debug},
-    solana_sdk::{
-        clock::{
-            Slot,
-        },
-        pubkey::Pubkey,
-        signature::Signature,
+    // solana_sdk::{
+    //     clock::{
+    //         Slot,
+    //     },
+    //     pubkey::Pubkey,
+    //     signature::Signature,
+    // },
+    solana_clock::{
+        Slot,
+    },
+    solana_pubkey::{
+        Pubkey,
+    },
+    solana_signature::{
+        Signature,
     },
     dexter_storage_proto_tx::convert::{generated},
     solana_storage_proto::convert::{
@@ -36,6 +45,9 @@ use {
         ConfirmedBlock, ConfirmedTransactionStatusWithSignature,
         ConfirmedTransactionWithStatusMeta,
         TransactionByAddrInfo,
+        // TransactionStatus,
+    },
+    solana_transaction_status_client_types::{
         TransactionStatus,
     },
     solana_storage_reader::{

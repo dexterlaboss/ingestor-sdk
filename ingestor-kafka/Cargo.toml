@@ -34,14 +34,18 @@ md5 = { workspace = true }
 memcache = { workspace = true }
 chrono = { workspace = true, features = ["serde"] }
 backoff = { workspace = true, features = ["tokio"] }
+
 solana-block-decoder = { workspace = true }
 solana-hbase-writer = { workspace = true }
 solana-storage-writer = { workspace = true }
 solana-transaction-status = { workspace = true }
 solana-clap-utils = { workspace = true }
-solana-sdk = { workspace = true }
+#solana-sdk = { workspace = true }
 solana-storage-proto = { workspace = true }
 solana-version = { workspace = true }
+
+solana-pubkey = { workspace = true }
+solana-transaction-status-client-types = { workspace = true }
 
 [dependencies.tokio]
 features = ["rt-multi-thread", "macros", "io-util"]

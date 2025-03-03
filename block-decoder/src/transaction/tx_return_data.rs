@@ -7,8 +7,14 @@ use {
     serde::{
         Deserialize, Serialize,
     },
-    solana_sdk::pubkey::Pubkey,
-    solana_transaction_status::UiTransactionReturnData,
+    // solana_sdk::pubkey::Pubkey,
+    solana_pubkey::{
+        Pubkey,
+    },
+    // solana_transaction_status::UiTransactionReturnData,
+    solana_transaction_status_client_types::{
+        UiTransactionReturnData,
+    },
     std::{
         str::FromStr,
     },
@@ -36,7 +42,7 @@ impl TryFrom<UiTransactionReturnData> for TransactionReturnData {
 }
 
 
-impl From<TransactionReturnData> for solana_sdk::transaction_context::TransactionReturnData {
+impl From<TransactionReturnData> for solana_transaction_context::TransactionReturnData {
     fn from(data: TransactionReturnData) -> Self {
         Self {
             program_id: data.program_id,

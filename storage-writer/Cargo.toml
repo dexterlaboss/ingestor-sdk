@@ -11,14 +11,17 @@ edition = "2021"
 [dependencies]
 async-trait = { workspace = true }
 log = { workspace = true }
-solana-sdk = { workspace = true }
-solana-transaction-status = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }
 serde = { workspace = true }
 serde_derive = { workspace = true }
 prost = { workspace = true }
 
+#solana-sdk = { workspace = true }
+solana-transaction-status = { workspace = true }
+
+solana-clock = { workspace = true }
+solana-pubkey = { workspace = true }
 
 # Unused deps:
 #md5 = { workspace = true }
