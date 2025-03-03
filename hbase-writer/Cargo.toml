@@ -38,6 +38,7 @@ solana-sysvar = { workspace = true }
 solana-transaction-status-client-types = { workspace = true }
 solana-message = { workspace = true }
 solana-instruction = { workspace = true }
+solana-reserved-account-keys = { workspace = true }
 
 solana-storage-writer = { workspace = true }
 solana-storage-proto = { workspace = true }

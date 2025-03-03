@@ -28,9 +28,7 @@ use {
     solana_pubkey::{
         Pubkey,
     },
-    solana_sysvar::{
-        is_sysvar_id,
-    },
+    solana_reserved_account_keys::ReservedAccountKeys,
     dexter_storage_proto_tx::convert::{
         generated
     },
@@ -232,7 +230,8 @@ impl LedgerStorageAdapter for LedgerStorage {
 
         info!("HBase: Uploading block {:?} from slot {:?}", confirmed_block.blockhash, slot);
 
-        let mut tx_cells = vec![];
+        let reserved_account_keys = ReservedAccountKeys::new_all_activated();
+        let mut tx_cells = Vec::with_capacity(confirmed_block.transactions.len());
         let mut full_tx_cells = vec![];
         let mut full_tx_cache = vec![];
         for (index, transaction_with_meta) in confirmed_block.transactions.iter().enumerate() {
@@ -273,7 +272,7 @@ impl LedgerStorageAdapter for LedgerStorage {
                         should_skip_full_tx = true;
                     }
 
-                    if !is_sysvar_id(address) && self.should_include_in_tx_by_addr(address) {
+                    if !reserved_account_keys.is_reserved(address) && self.should_include_in_tx_by_addr(address) {
                         by_addr
                             .entry(address)
                             .or_default()

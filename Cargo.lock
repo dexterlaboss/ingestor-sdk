@@ -717,7 +717,7 @@ checksum = "6e5c37193a1db1d8ed868c03ec7b152175f26160a5b740e5e484143877e0adf0"
 
 [[package]]
 name = "dexter-storage-proto-tx"
-version = "2.1.1"
+version = "2.1.2"
 dependencies = [
  "bincode",
  "bs58 0.4.0",
@@ -2765,7 +2765,7 @@ dependencies = [
 
 [[package]]
 name = "solana-block-decoder"
-version = "2.1.1"
+version = "2.1.2"
 dependencies = [
  "Inflector",
  "base64 0.21.7",
@@ -3131,7 +3131,7 @@ dependencies = [
 
 [[package]]
 name = "solana-hbase-reader"
-version = "2.1.1"
+version = "2.1.2"
 dependencies = [
  "async-trait",
  "backoff",
@@ -3168,7 +3168,7 @@ dependencies = [
 
 [[package]]
 name = "solana-hbase-writer"
-version = "2.1.1"
+version = "2.1.2"
 dependencies = [
  "async-trait",
  "backoff",
@@ -3193,6 +3193,7 @@ dependencies = [
  "solana-instruction",
  "solana-message",
  "solana-pubkey",
+ "solana-reserved-account-keys",
  "solana-storage-proto",
  "solana-storage-utils",
  "solana-storage-writer",
@@ -4041,7 +4042,7 @@ dependencies = [
 
 [[package]]
 name = "solana-storage-reader"
-version = "2.1.1"
+version = "2.1.2"
 dependencies = [
  "async-trait",
  "log",
@@ -4062,7 +4063,7 @@ dependencies = [
 
 [[package]]
 name = "solana-storage-utils"
-version = "2.1.1"
+version = "2.1.2"
 dependencies = [
  "bincode",
  "bzip2",
@@ -4080,7 +4081,7 @@ dependencies = [
 
 [[package]]
 name = "solana-storage-writer"
-version = "2.1.1"
+version = "2.1.2"
 dependencies = [
  "async-trait",
  "log",
