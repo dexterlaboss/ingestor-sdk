@@ -58,8 +58,8 @@ jobs:
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 
-      - name: Publish dexter-storage-proto to crates.io
-        run: cargo publish -p dexter-storage-proto --no-verify
+      - name: Publish dexter-storage-proto-tx to crates.io
+        run: cargo publish -p dexter-storage-proto-tx --no-verify
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 
