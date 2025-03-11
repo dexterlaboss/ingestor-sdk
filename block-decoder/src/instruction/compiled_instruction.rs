@@ -45,3 +45,73 @@ impl From<CompiledInstruction> for solana_message::compiled_instruction::Compile
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json;
+    use solana_transaction_status_client_types::UiCompiledInstruction;
+    use solana_message::compiled_instruction::CompiledInstruction as SolanaCompiledInstruction;
+    use bs58;
+
+    #[test]
+    fn test_serialization_deserialization() {
+        let instr = CompiledInstruction {
+            program_id_index: 1,
+            accounts: vec![0, 1, 2],
+            data: vec![10, 20, 30],
+        };
+
+        let json = serde_json::to_string(&instr).unwrap();
+        let deserialized: CompiledInstruction = serde_json::from_str(&json).unwrap();
+
+        assert_eq!(instr, deserialized);
+    }
+
+    #[test]
+    fn test_from_ui_compiled_instruction_valid() {
+        let ui_instr = UiCompiledInstruction {
+            program_id_index: 2,
+            accounts: vec![3, 4, 5],
+            data: bs58::encode(vec![100, 101, 102]).into_string(),
+            stack_height: None,
+        };
+
+        let compiled_instr: CompiledInstruction = ui_instr.clone().into();
+
+        assert_eq!(compiled_instr.program_id_index, ui_instr.program_id_index);
+        assert_eq!(compiled_instr.accounts, ui_instr.accounts);
+        assert_eq!(compiled_instr.data, vec![100, 101, 102]);
+    }
+
+    #[test]
+    fn test_from_ui_compiled_instruction_invalid_base58() {
+        let ui_instr = UiCompiledInstruction {
+            program_id_index: 0,
+            accounts: vec![0],
+            data: "invalid_base58".to_string(),
+            stack_height: None,
+        };
+
+        let result = std::panic::catch_unwind(|| {
+            let _compiled_instr: CompiledInstruction = ui_instr.into();
+        });
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_from_compiled_instruction_to_solana_compiled_instruction() {
+        let instr = CompiledInstruction {
+            program_id_index: 3,
+            accounts: vec![6, 7, 8],
+            data: vec![9, 10, 11],
+        };
+
+        let solana_instr: SolanaCompiledInstruction = instr.clone().into();
+
+        assert_eq!(solana_instr.program_id_index, instr.program_id_index);
+        assert_eq!(solana_instr.accounts, instr.accounts);
+        assert_eq!(solana_instr.data, instr.data);
+    }
+}

@@ -183,8 +183,8 @@ mod tests {
     use std::str::FromStr;
 
     use solana_transaction_status_client_types::{
-        UiTransactionEncoding, UiTransaction, UiMessage, UiRawMessage, /* etc. add what you need */
-        UiTransactionStatusMeta, // Must exist in your crate
+        UiTransactionEncoding, UiTransaction, UiMessage, UiRawMessage,
+        UiTransactionStatusMeta,
     };
     use solana_transaction_status::TransactionBinaryEncoding;
     use serde_json::json;
@@ -208,10 +208,6 @@ mod tests {
     }
 
     fn make_invalid_ui_meta() -> UiTransactionStatusMeta {
-        // Construct something that should fail in TransactionStatusMeta::try_from(...)
-        // For example, you can insert unknown fields or missing fields,
-        // depending on how strictly you check in try_from(). If unknown fields
-        // are simply ignored, you may need a different shape.
         serde_json::from_value(json!({
             "invalid": "meta"
         })).expect("Unexpectedly parsed 'invalid' meta successfully")
@@ -239,7 +235,7 @@ mod tests {
             TransactionBinaryEncoding::Base64,
         );
 
-        // 4. Construct a VALID `UiTransactionStatusMeta`
+        // 4. Construct a valid `UiTransactionStatusMeta`
         let meta_json = json!({
             "status": { "Ok": null },
             "fee": 0,
@@ -277,7 +273,7 @@ mod tests {
 
     #[test]
     fn test_decode_versioned_transaction_with_status_meta_invalid_data() {
-        // 1. Create a VALID Base64-encoded transaction
+        // 1. Create a valid Base64-encoded transaction
         let valid_transaction = VersionedTransaction {
             signatures: vec![Signature::default()],  // Valid 64-byte signature
             message: VersionedMessage::Legacy(Message::default()), // Valid structure
@@ -293,7 +289,7 @@ mod tests {
             TransactionBinaryEncoding::Base64,
         );
 
-        // 2. Construct an INVALID `UiTransactionStatusMeta`
+        // 2. Construct an invalid `UiTransactionStatusMeta`
         let encoded_meta = Some(serde_json::from_value(json!({
             "status": { "Ok": null },
             "fee": u64::MAX,
@@ -381,7 +377,7 @@ mod tests {
         let encoded_string = bs58::encode(&raw_bytes).into_string();
 
         // Ensure we use the correct encoding variant
-        let encoded = EncodedTransaction::LegacyBinary(encoded_string); // <-- Use LegacyBinary!
+        let encoded = EncodedTransaction::LegacyBinary(encoded_string);
 
         let result = VersionedTransaction::decode_with_meta(
             encoded,
@@ -588,12 +584,9 @@ mod tests {
 
     #[test]
     fn test_decode_versioned_transaction_json() {
-        // Instead of passing JSON directly, construct a UiTransaction object.
-        // For example, a raw message with minimal fields:
         let ui_transaction = UiTransaction {
             signatures: vec!["signature".to_string()],
             message: UiMessage::Raw(
-                // If there's a struct called UiRawMessage, fill in whatever is needed.
                 serde_json::from_value(json!({
                     "header": {
                         "numRequiredSignatures": 0,
@@ -615,8 +608,6 @@ mod tests {
             Some(TransactionVersion::Number(0)),
         );
 
-        // The test originally expected an error due to "Invalid signature format."
-        // That can still be valid if the "signature" string does not parse as a real Signature.
         assert!(result.is_err());
     }
 
@@ -631,7 +622,7 @@ mod tests {
         let ui_transaction = UiTransaction {
             signatures: vec!["signature".to_string()],
             message: UiMessage::Parsed(serde_json::from_value(json!({
-                "accountKeys": [],  // REQUIRED FIELD
+                "accountKeys": [],
                 "recentBlockhash": "some-blockhash",
                 "instructions": []
             })).expect("Failed to construct valid UiMessage::Parsed")),

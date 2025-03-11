@@ -1,7 +1,7 @@
 
 use std::{error::Error, fmt};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum ConversionError {
     InvalidProgramId,
     InvalidData,

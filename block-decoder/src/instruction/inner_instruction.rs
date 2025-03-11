@@ -84,3 +84,115 @@ impl From<InnerInstruction> for solana_transaction_status_client_types::InnerIns
 }
 
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use solana_transaction_status_client_types::{
+        UiCompiledInstruction, UiInnerInstructions, UiInstruction, UiParsedInstruction
+    };
+    use crate::{instruction::CompiledInstruction, errors::conversion_error::ConversionError};
+
+    #[test]
+    fn test_ui_inner_instructions_to_inner_instructions_success() {
+        let ui_compiled_instruction = UiCompiledInstruction {
+            program_id_index: 1,
+            accounts: vec![2, 3],
+            data: "abcd".to_string(),
+            stack_height: Some(5),
+        };
+        let ui_inner_instructions = UiInnerInstructions {
+            index: 0,
+            instructions: vec![UiInstruction::Compiled(ui_compiled_instruction.clone())],
+        };
+
+        let result = InnerInstructions::try_from(ui_inner_instructions);
+        assert!(result.is_ok());
+        let inner_instructions = result.unwrap();
+        assert_eq!(inner_instructions.index, 0);
+        assert_eq!(inner_instructions.instructions.len(), 1);
+        assert_eq!(inner_instructions.instructions[0].stack_height, Some(5));
+        assert_eq!(inner_instructions.instructions[0].instruction.program_id_index, 1);
+    }
+
+    #[test]
+    fn test_ui_inner_instructions_to_inner_instructions_error() {
+        use solana_transaction_status_client_types::{UiParsedInstruction, ParsedInstruction};
+
+        let ui_inner_instructions = UiInnerInstructions {
+            index: 1,
+            instructions: vec![UiInstruction::Parsed(UiParsedInstruction::Parsed(ParsedInstruction {
+                program: "Unsupported".to_string(),
+                parsed: serde_json::Value::Null,
+                program_id: "unsupported_program".to_string(),
+                stack_height: None,
+            }))],
+        };
+
+        let result = InnerInstructions::try_from(ui_inner_instructions);
+        assert!(result.is_err());
+        assert!(matches!(result.unwrap_err(), ConversionError::UnsupportedInstructionFormat));
+    }
+
+    #[test]
+    fn test_ui_compiled_instruction_to_inner_instruction() {
+        use bs58;
+
+        let encoded_data = bs58::encode("data").into_string();
+
+        let ui_compiled_instruction = UiCompiledInstruction {
+            program_id_index: 2,
+            accounts: vec![4, 5, 6],
+            data: encoded_data,
+            stack_height: Some(3),
+        };
+
+        let inner_instruction = InnerInstruction::from(ui_compiled_instruction.clone());
+
+        assert_eq!(inner_instruction.stack_height, Some(3));
+        assert_eq!(inner_instruction.instruction.program_id_index, 2);
+        assert_eq!(inner_instruction.instruction.accounts, vec![4, 5, 6]);
+        assert_eq!(inner_instruction.instruction.data, b"data".to_vec());
+    }
+
+    #[test]
+    fn test_inner_instructions_to_solana_inner_instructions() {
+        let compiled_instruction = CompiledInstruction {
+            program_id_index: 3,
+            accounts: vec![7, 8],
+            data: vec![1, 2, 3],
+        };
+        let inner_instruction = InnerInstruction {
+            instruction: compiled_instruction.clone(),
+            stack_height: Some(10),
+        };
+        let inner_instructions = InnerInstructions {
+            index: 2,
+            instructions: vec![inner_instruction.clone()],
+        };
+
+        let solana_inner_instructions: solana_transaction_status_client_types::InnerInstructions = inner_instructions.into();
+        assert_eq!(solana_inner_instructions.index, 2);
+        assert_eq!(solana_inner_instructions.instructions.len(), 1);
+        assert_eq!(solana_inner_instructions.instructions[0].stack_height, Some(10));
+    }
+
+    #[test]
+    fn test_inner_instruction_to_solana_inner_instruction() {
+        let compiled_instruction = CompiledInstruction {
+            program_id_index: 4,
+            accounts: vec![9, 10],
+            data: vec![4, 5, 6],
+        };
+        let inner_instruction = InnerInstruction {
+            instruction: compiled_instruction.clone(),
+            stack_height: Some(7),
+        };
+
+        let solana_inner_instruction: solana_transaction_status_client_types::InnerInstruction = inner_instruction.into();
+        assert_eq!(solana_inner_instruction.stack_height, Some(7));
+        assert_eq!(solana_inner_instruction.instruction.program_id_index, 4);
+    }
+}
+
+
+
