@@ -78,3 +78,23 @@ impl EncodedTransaction {
         })
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use {super::*, serde_json::json};
+
+    #[test]
+    fn test_decode_invalid_transaction() {
+        // This transaction will not pass sanitization
+        let unsanitary_transaction = EncodedTransaction::Binary(
+            "ju9xZWuDBX4pRxX2oZkTjxU5jB4SSTgEGhX8bQ8PURNzyzqKMPPpNvWihx8zUe\
+             FfrbVNoAaEsNKZvGzAnTDy5bhNT9kt6KFCTBixpvrLCzg4M5UdFUQYrn1gdgjX\
+             pLHxcaShD81xBNaFDgnA2nkkdHnKtZt4hVSfKAmw3VRZbjrZ7L2fKZBx21CwsG\
+             hD6onjM2M3qZW5C8J6d1pj41MxKmZgPBSha3MyKkNLkAGFASK"
+                .to_string(),
+            TransactionBinaryEncoding::Base58,
+        );
+        assert!(unsanitary_transaction.decode().is_none());
+    }
+
+}

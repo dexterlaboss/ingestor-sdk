@@ -13,7 +13,7 @@ members = [
 resolver = "2"
 
 [workspace.package]
-version = "2.1.2"
+version = "2.1.4"
 authors = ["Aurimas Narkevicius <aurimas.n@dexterlab.com>"]
 repository = "https://github.com/dexterlaboss/ingestor-sdk"
 homepage = "https://dexterlab.com/"
@@ -126,10 +126,10 @@ solana-reserved-account-keys = "=2.2.1"
 solana-account-decoder-client-types = "=2.2.0"
 solana-transaction-status-client-types = "=2.2.0"
 
-solana-storage-reader = { path = "storage-reader", version = "=2.1.2" }
-solana-storage-writer = { path = "storage-writer", version = "=2.1.2" }
-solana-storage-utils = { path = "storage-utils", version = "=2.1.2" }
-solana-hbase-reader = { path = "hbase-reader", version = "=2.1.2" }
-solana-hbase-writer = { path = "hbase-writer", version = "=2.1.2" }
-solana-block-decoder = { path = "block-decoder", version = "=2.1.2" }
-dexter-storage-proto-tx = { path = "storage-proto-tx", version = "=2.1.2" }
+solana-storage-reader = { path = "storage-reader", version = "=2.1.4" }
+solana-storage-writer = { path = "storage-writer", version = "=2.1.4" }
+solana-storage-utils = { path = "storage-utils", version = "=2.1.4" }
+solana-hbase-reader = { path = "hbase-reader", version = "=2.1.4" }
+solana-hbase-writer = { path = "hbase-writer", version = "=2.1.4" }
+solana-block-decoder = { path = "block-decoder", version = "=2.1.4" }
+dexter-storage-proto-tx = { path = "storage-proto-tx", version = "=2.1.4" }

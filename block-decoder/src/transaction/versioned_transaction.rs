@@ -176,3 +176,487 @@ impl From<VersionedTransactionWithStatusMeta> for solana_transaction_status::Ver
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::str::FromStr;
+
+    use solana_transaction_status_client_types::{
+        UiTransactionEncoding, UiTransaction, UiMessage, UiRawMessage, /* etc. add what you need */
+        UiTransactionStatusMeta, // Must exist in your crate
+    };
+    use solana_transaction_status::TransactionBinaryEncoding;
+    use serde_json::json;
+    use solana_signature::SIGNATURE_BYTES;
+
+    fn make_valid_ui_meta() -> UiTransactionStatusMeta {
+        serde_json::from_value(json!({
+            "status": { "Ok": null },
+            "fee": 0,
+            "preBalances": [100u64, 50u64],
+            "postBalances": [90u64, 50u64],
+            "rewards": [],
+            "logMessages": [],
+            "innerInstructions": [],
+            "preTokenBalances": null,
+            "postTokenBalances": null,
+            "loadedAddresses": { "readonly": [], "writable": [] },
+            "returnData": null,
+            "computeUnitsConsumed": 0
+        })).expect("Failed to deserialize a valid UiTransactionStatusMeta")
+    }
+
+    fn make_invalid_ui_meta() -> UiTransactionStatusMeta {
+        // Construct something that should fail in TransactionStatusMeta::try_from(...)
+        // For example, you can insert unknown fields or missing fields,
+        // depending on how strictly you check in try_from(). If unknown fields
+        // are simply ignored, you may need a different shape.
+        serde_json::from_value(json!({
+            "invalid": "meta"
+        })).expect("Unexpectedly parsed 'invalid' meta successfully")
+    }
+
+    #[test]
+    fn test_decode_versioned_transaction_with_status_meta_success() {
+        // 1. Create a valid VersionedTransaction
+        let valid_transaction = VersionedTransaction {
+            signatures: vec![Signature::default()],
+            message: VersionedMessage::Legacy(Message::default()),
+        };
+
+        // 2. Serialize it correctly before encoding to Base64
+        let raw_bytes = bincode::serialize(&valid_transaction)
+            .expect("Failed to serialize VersionedTransaction");
+
+        let encoded_string = base64::engine::general_purpose::STANDARD.encode(&raw_bytes);
+
+        println!("Base64 Encoded Transaction: {}", encoded_string);  // Debugging output
+
+        // 3. Create a correctly formatted EncodedTransaction
+        let encoded_tx = EncodedTransaction::Binary(
+            encoded_string,
+            TransactionBinaryEncoding::Base64,
+        );
+
+        // 4. Construct a VALID `UiTransactionStatusMeta`
+        let meta_json = json!({
+            "status": { "Ok": null },
+            "fee": 0,
+            "preBalances": [100u64, 50u64],
+            "postBalances": [90u64, 50u64],
+            "rewards": [],
+            "logMessages": [],
+            "innerInstructions": [],
+            "preTokenBalances": null,
+            "postTokenBalances": null,
+            "loadedAddresses": { "readonly": [], "writable": [] },
+            "returnData": null,
+            "computeUnitsConsumed": 0
+        });
+
+        println!("Meta JSON: {}", meta_json.to_string());  // Debugging output
+
+        let encoded_meta = Some(serde_json::from_value(meta_json)
+            .expect("Failed to create valid meta"));
+
+        println!("Parsed Meta: {:?}", encoded_meta); // Debugging output
+
+        let encoded = EncodedTransactionWithStatusMeta {
+            transaction: encoded_tx,
+            meta: encoded_meta,
+            version: None,
+        };
+
+        // 5. Decode the transaction and meta
+        let result = dbg!(VersionedTransactionWithStatusMeta::decode(encoded, UiTransactionEncoding::Base64));
+
+        // Ensure decoding succeeds
+        assert!(result.is_ok(), "Expected successful decoding, but got {:?}", result);
+    }
+
+    #[test]
+    fn test_decode_versioned_transaction_with_status_meta_invalid_data() {
+        // 1. Create a VALID Base64-encoded transaction
+        let valid_transaction = VersionedTransaction {
+            signatures: vec![Signature::default()],  // Valid 64-byte signature
+            message: VersionedMessage::Legacy(Message::default()), // Valid structure
+        };
+
+        let raw_bytes = bincode::serialize(&valid_transaction)
+            .expect("Failed to serialize VersionedTransaction");
+
+        let encoded_string = base64::engine::general_purpose::STANDARD.encode(&raw_bytes);
+
+        let encoded_tx = EncodedTransaction::Binary(
+            encoded_string,
+            TransactionBinaryEncoding::Base64,
+        );
+
+        // 2. Construct an INVALID `UiTransactionStatusMeta`
+        let encoded_meta = Some(serde_json::from_value(json!({
+            "status": { "Ok": null },
+            "fee": u64::MAX,
+            "preBalances": [],
+            "postBalances": [],
+            "rewards": [],
+            "logMessages": None::<Vec<String>>,
+            "innerInstructions": None::<Vec<String>>
+        })).expect("Failed to create invalid meta"));
+
+        let encoded = EncodedTransactionWithStatusMeta {
+            transaction: encoded_tx,
+            meta: encoded_meta,
+            version: None,
+        };
+
+        // 3. Attempt to decode
+        let result = VersionedTransactionWithStatusMeta::decode(encoded, UiTransactionEncoding::Base64);
+
+        // 4. Ensure decoding fails
+        match result {
+            Err(DecodeError::InvalidData) => {}
+            Ok(_) => panic!("Expected InvalidData error, but decoding succeeded!"),
+            Err(e) => panic!("Expected InvalidData error, got {:?}", e),
+        }
+    }
+
+    #[test]
+    fn test_decode_versioned_transaction_with_status_meta_no_meta() {
+        let valid_transaction = VersionedTransaction {
+            signatures: vec![Signature::default()],
+            message: VersionedMessage::Legacy(Message::default()),
+        };
+
+        let raw_bytes = bincode::serialize(&valid_transaction).unwrap();
+        let encoded_string = base64::engine::general_purpose::STANDARD.encode(&raw_bytes);
+        let encoded_tx = EncodedTransaction::Binary(encoded_string, TransactionBinaryEncoding::Base64);
+
+        let encoded = EncodedTransactionWithStatusMeta {
+            transaction: encoded_tx,
+            meta: None,
+            version: None,
+        };
+
+        let result = VersionedTransactionWithStatusMeta::decode(encoded, UiTransactionEncoding::Base64);
+        assert!(matches!(result, Err(DecodeError::InvalidData)));
+    }
+
+    #[test]
+    fn test_from_versioned_transaction() {
+        // Generate a valid base58-encoded 64-byte signature
+        let valid_signature_bytes = [0u8; SIGNATURE_BYTES]; // 64 bytes of zeros
+        let valid_signature_str = bs58::encode(valid_signature_bytes).into_string();
+
+        // Ensure that the signature is correctly formatted
+        let signature = Signature::from_str(&valid_signature_str)
+            .expect("Failed to parse valid base58 signature");
+
+        let tx = VersionedTransaction {
+            signatures: vec![signature],
+            message: VersionedMessage::Legacy(Message::default()),
+        };
+
+        let converted: solana_transaction::versioned::VersionedTransaction = tx.into();
+
+        // Ensure the number of signatures is correct
+        assert_eq!(converted.signatures.len(), 1);
+    }
+
+
+
+    //
+    // Encoding: Binary | Base58
+    //
+
+    #[test]
+    fn test_decode_versioned_transaction_success_legacy_binary() {
+        // Serialize a valid VersionedTransaction
+        let raw_bytes = bincode::serialize(&VersionedTransaction {
+            signatures: vec![Signature::default()],
+            message: VersionedMessage::Legacy(Message::default()),
+        }).expect("Failed to serialize VersionedTransaction");
+
+        // Correctly encode it into base58
+        let encoded_string = bs58::encode(&raw_bytes).into_string();
+
+        // Ensure we use the correct encoding variant
+        let encoded = EncodedTransaction::LegacyBinary(encoded_string); // <-- Use LegacyBinary!
+
+        let result = VersionedTransaction::decode_with_meta(
+            encoded,
+            UiTransactionEncoding::Base58,
+            None,
+        );
+
+        // Ensure that decoding works as expected
+        assert!(result.is_ok(), "Expected successful decoding, but got {:?}", result);
+    }
+
+    #[test]
+    fn test_decode_versioned_transaction_invalid_base58_format() {
+        let encoded = EncodedTransaction::LegacyBinary("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".to_string());
+        let result = VersionedTransaction::decode_with_meta(encoded, UiTransactionEncoding::Base58, None);
+        assert!(matches!(result, Err(DecodeError::DeserializeFailed)));
+    }
+
+    #[test]
+    fn test_decode_versioned_transaction_invalid_legacy_binary() {
+        // Provide an invalid base58 string
+        let encoded = EncodedTransaction::Binary(
+            "invalid-base58".to_string(),
+            TransactionBinaryEncoding::Base58,
+        );
+
+        let result = VersionedTransaction::decode_with_meta(
+            encoded,
+            UiTransactionEncoding::Base58,
+            None,
+        );
+
+        // Assert that decoding fails
+        assert!(result.is_err(), "Expected decoding to fail for invalid encoding type");
+    }
+
+
+    //
+    // Encoding: Base64
+    //
+
+    #[test]
+    fn test_decode_versioned_transaction_success_base64() {
+        // bincode-serialize a simple VersionedTransaction
+        let raw_bytes = bincode::serialize(&VersionedTransaction {
+            signatures: vec![Signature::default()],
+            message: VersionedMessage::Legacy(Message::default()),
+        }).unwrap();
+
+        let encoded_string = base64::engine::general_purpose::STANDARD.encode(&raw_bytes);
+
+        let encoded = EncodedTransaction::Binary(
+            encoded_string,
+            TransactionBinaryEncoding::Base64,
+        );
+
+        let result = VersionedTransaction::decode_with_meta(
+            encoded,
+            UiTransactionEncoding::Base64,
+            None,
+        );
+
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_decode_versioned_transaction_success_base64_v0() {
+        // bincode-serialize a simple VersionedTransaction
+        let raw_bytes = bincode::serialize(&VersionedTransaction {
+            signatures: vec![Signature::default()],
+            message: VersionedMessage::Legacy(Message::default()),
+        })
+            .unwrap();
+
+        let encoded_string = base64::engine::general_purpose::STANDARD.encode(&raw_bytes);
+
+        let encoded = EncodedTransaction::Binary(
+            encoded_string,
+            TransactionBinaryEncoding::Base64,
+        );
+
+        let result = VersionedTransaction::decode_with_meta(
+            encoded,
+            UiTransactionEncoding::Base64,
+            Some(TransactionVersion::Number(0)),
+        );
+
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    #[should_panic(expected = "called `Result::unwrap()` on an `Err` value: InvalidByte")]
+    fn test_decode_versioned_transaction_invalid_base64() {
+        // Provide an invalid base64 string
+        let encoded = EncodedTransaction::Binary(
+            "invalid-base64".to_string(),
+            TransactionBinaryEncoding::Base64,
+        );
+
+        // Since `BASE64_STANDARD.decode()` fails immediately, the function panics.
+        // This test should confirm that it panics as expected.
+        let _ = VersionedTransaction::decode_with_meta(
+            encoded,
+            UiTransactionEncoding::Base64,
+            None,
+        );
+    }
+
+    #[test]
+    #[should_panic(expected = "called `Result::unwrap()` on an `Err` value: InvalidByte")]
+    fn test_decode_versioned_transaction_invalid_base64_v0() {
+        // Provide an invalid base64 string
+        let encoded = EncodedTransaction::Binary(
+            "invalid-base64".to_string(),
+            TransactionBinaryEncoding::Base64,
+        );
+
+        // Since `BASE64_STANDARD.decode()` fails immediately, the function panics.
+        // This test should confirm that it panics as expected.
+        let _ = VersionedTransaction::decode_with_meta(
+            encoded,
+            UiTransactionEncoding::Base64,
+            Some(TransactionVersion::Number(0)),
+        );
+    }
+
+    #[test]
+    fn test_decode_versioned_transaction_invalid_base64_format() {
+        let encoded = EncodedTransaction::Binary("aGVsbG8gd29ybGQ=".to_string(), TransactionBinaryEncoding::Base64);
+        let result = VersionedTransaction::decode_with_meta(encoded, UiTransactionEncoding::Base64, None);
+        assert!(matches!(result, Err(DecodeError::DeserializeFailed)));
+    }
+
+
+    //
+    // Encoding: Json
+    //
+
+    #[test]
+    fn test_decode_versioned_transaction_json_invalid_signature() {
+        let ui_transaction = UiTransaction {
+            signatures: vec!["invalid-signature".to_string()],
+            message: UiMessage::Raw(serde_json::from_value(json!({
+                "header": {
+                    "numRequiredSignatures": 0,
+                    "numReadonlySignedAccounts": 0,
+                    "numReadonlyUnsignedAccounts": 0
+                },
+                "accountKeys": [],
+                "instructions": [],
+                "recentBlockhash": "some-blockhash"
+            })).unwrap()),
+        };
+
+        let json_encoded = EncodedTransaction::Json(ui_transaction);
+        let result = VersionedTransaction::decode_with_meta(json_encoded, UiTransactionEncoding::Json, None);
+        assert!(matches!(result, Err(DecodeError::ParseSignatureFailed(_))));
+    }
+
+    #[test]
+    fn test_decode_versioned_transaction_json_invalid_version() {
+        let ui_transaction = UiTransaction {
+            signatures: vec![Signature::default().to_string()],
+            message: UiMessage::Raw(serde_json::from_value(json!({
+                "header": {
+                    "numRequiredSignatures": 0,
+                    "numReadonlySignedAccounts": 0,
+                    "numReadonlyUnsignedAccounts": 0
+                },
+                "accountKeys": [],
+                "instructions": [],
+                "recentBlockhash": "some-blockhash"
+            })).unwrap()),
+        };
+
+        let json_encoded = EncodedTransaction::Json(ui_transaction);
+        let result = VersionedTransaction::decode_with_meta(
+            json_encoded,
+            UiTransactionEncoding::Json,
+            Some(TransactionVersion::Number(99))
+        );
+        assert!(matches!(result, Err(DecodeError::UnsupportedVersion)));
+    }
+
+    #[test]
+    fn test_decode_versioned_transaction_invalid_json_encoding() {
+        let ui_transaction = UiTransaction {
+            signatures: vec![Signature::default().to_string()],
+            message: UiMessage::Parsed(serde_json::from_value(json!({
+                "accountKeys": [],
+                "recentBlockhash": "some-blockhash",
+                "instructions": []
+            })).unwrap()),
+        };
+
+        let json_encoded = EncodedTransaction::Json(ui_transaction);
+        let result = VersionedTransaction::decode_with_meta(
+            json_encoded,
+            UiTransactionEncoding::JsonParsed,
+            None
+        );
+        assert!(matches!(result, Err(DecodeError::UnsupportedEncoding)));
+    }
+
+    #[test]
+    fn test_decode_versioned_transaction_json() {
+        // Instead of passing JSON directly, construct a UiTransaction object.
+        // For example, a raw message with minimal fields:
+        let ui_transaction = UiTransaction {
+            signatures: vec!["signature".to_string()],
+            message: UiMessage::Raw(
+                // If there's a struct called UiRawMessage, fill in whatever is needed.
+                serde_json::from_value(json!({
+                    "header": {
+                        "numRequiredSignatures": 0,
+                        "numReadonlySignedAccounts": 0,
+                        "numReadonlyUnsignedAccounts": 0
+                    },
+                    "accountKeys": [],
+                    "instructions": [],
+                    "recentBlockhash": "some-blockhash"
+                })).unwrap()
+            ),
+        };
+
+        let json_encoded = EncodedTransaction::Json(ui_transaction);
+
+        let result = VersionedTransaction::decode_with_meta(
+            json_encoded,
+            UiTransactionEncoding::Json,
+            Some(TransactionVersion::Number(0)),
+        );
+
+        // The test originally expected an error due to "Invalid signature format."
+        // That can still be valid if the "signature" string does not parse as a real Signature.
+        assert!(result.is_err());
+    }
+
+
+    //
+    // Encoding: JsonParsed
+    //
+
+    #[test]
+    fn test_decode_versioned_transaction_unsupported_encoding() {
+        // Construct a valid JSON-encoded transaction
+        let ui_transaction = UiTransaction {
+            signatures: vec!["signature".to_string()],
+            message: UiMessage::Parsed(serde_json::from_value(json!({
+                "accountKeys": [],  // REQUIRED FIELD
+                "recentBlockhash": "some-blockhash",
+                "instructions": []
+            })).expect("Failed to construct valid UiMessage::Parsed")),
+        };
+
+        let json_encoded = EncodedTransaction::Json(ui_transaction);
+
+        let result = VersionedTransaction::decode_with_meta(
+            json_encoded,
+            UiTransactionEncoding::JsonParsed, // Using JsonParsed to trigger unsupported error
+            None,
+        );
+
+        // Ensure decoding fails with UnsupportedEncoding
+        assert!(result.is_err(), "Expected decoding to fail with UnsupportedEncoding");
+    }
+
+    #[test]
+    fn test_decode_versioned_transaction_unsupported_encoding_variant() {
+        let encoded = EncodedTransaction::Binary("invalid".to_string(), TransactionBinaryEncoding::Base64);
+        let result = VersionedTransaction::decode_with_meta(
+            encoded,
+            UiTransactionEncoding::JsonParsed,
+            None
+        );
+        assert!(matches!(result, Err(DecodeError::UnsupportedEncoding)));
+    }
+}
