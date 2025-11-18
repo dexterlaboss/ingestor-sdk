@@ -800,7 +800,7 @@ checksum = "6e5c37193a1db1d8ed868c03ec7b152175f26160a5b740e5e484143877e0adf0"
 
 [[package]]
 name = "dexter-storage-proto-tx"
-version = "2.1.4"
+version = "2.2.0"
 dependencies = [
  "bincode",
  "bs58 0.4.0",
@@ -3227,7 +3227,7 @@ dependencies = [
 
 [[package]]
 name = "solana-bigtable-reader"
-version = "2.1.4"
+version = "2.2.0"
 dependencies = [
  "async-trait",
  "backoff",
@@ -3274,7 +3274,7 @@ dependencies = [
 
 [[package]]
 name = "solana-bigtable-shared"
-version = "2.1.4"
+version = "2.2.0"
 dependencies = [
  "async-trait",
  "backoff",
@@ -3312,7 +3312,7 @@ dependencies = [
 
 [[package]]
 name = "solana-bigtable-writer"
-version = "2.1.4"
+version = "2.2.0"
 dependencies = [
  "async-trait",
  "backoff",
@@ -3376,7 +3376,7 @@ dependencies = [
 
 [[package]]
 name = "solana-block-decoder"
-version = "2.1.4"
+version = "2.2.0"
 dependencies = [
  "Inflector",
  "base64 0.21.7",
@@ -3742,7 +3742,7 @@ dependencies = [
 
 [[package]]
 name = "solana-hbase-reader"
-version = "2.1.4"
+version = "2.2.0"
 dependencies = [
  "async-trait",
  "backoff",
@@ -3779,7 +3779,7 @@ dependencies = [
 
 [[package]]
 name = "solana-hbase-writer"
-version = "2.1.4"
+version = "2.2.0"
 dependencies = [
  "async-trait",
  "backoff",
@@ -4654,7 +4654,7 @@ dependencies = [
 
 [[package]]
 name = "solana-storage-reader"
-version = "2.1.4"
+version = "2.2.0"
 dependencies = [
  "async-trait",
  "log",
@@ -4675,7 +4675,7 @@ dependencies = [
 
 [[package]]
 name = "solana-storage-utils"
-version = "2.1.4"
+version = "2.2.0"
 dependencies = [
  "bincode",
  "bzip2",
@@ -4693,7 +4693,7 @@ dependencies = [
 
 [[package]]
 name = "solana-storage-writer"
-version = "2.1.4"
+version = "2.2.0"
 dependencies = [
  "async-trait",
  "log",

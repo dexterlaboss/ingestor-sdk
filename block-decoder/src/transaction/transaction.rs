@@ -21,7 +21,7 @@ use {
     },
     solana_transaction_status_client_types::{
         TransactionBinaryEncoding,
-        UiTransaction,
+        // UiTransaction,
     },
     std::{
         str::FromStr,

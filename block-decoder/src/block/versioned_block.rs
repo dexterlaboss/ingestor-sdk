@@ -8,7 +8,14 @@ use {
             },
         },
         transaction::{
-            versioned_transaction::VersionedTransactionWithStatusMeta,
+            versioned_transaction::{VersionedTransactionWithStatusMeta, VersionedTransaction},
+            tx_status_meta::TransactionStatusMeta,
+        },
+        message::{
+            versioned_message::VersionedMessage,
+        },
+        address::{
+            loaded_addresses::LoadedAddresses,
         },
     },
     solana_clock::{
@@ -43,12 +50,45 @@ impl TryFrom<ConfirmedBlock> for VersionedConfirmedBlock {
     fn try_from(block: ConfirmedBlock) -> Result<Self, Self::Error> {
         let expected_transaction_count = block.transactions.len();
 
+        let add_empty_tx_metadata_if_missing = crate::add_empty_tx_metadata_if_missing();
+
         let txs: Vec<_> = block
             .transactions
             .into_iter()
-            .filter_map(|tx| match tx {
-                TransactionWithStatusMeta::MissingMetadata(_) => None,
-                TransactionWithStatusMeta::Complete(tx) => Some(tx),
+            .filter_map(|tx| {
+                match tx {
+                    TransactionWithStatusMeta::MissingMetadata(transaction) => {
+                        if add_empty_tx_metadata_if_missing {
+                            // Build a complete transaction with empty/default metadata
+                            let versioned_transaction = VersionedTransaction {
+                                signatures: transaction.signatures,
+                                message: VersionedMessage::Legacy(transaction.message),
+                            };
+                            let default_meta = TransactionStatusMeta {
+                                status: Ok(()),
+                                fee: 0,
+                                pre_balances: vec![],
+                                post_balances: vec![],
+                                inner_instructions: None,
+                                log_messages: None,
+                                pre_token_balances: None,
+                                post_token_balances: None,
+                                rewards: None,
+                                loaded_addresses: LoadedAddresses::default(),
+                                return_data: None,
+                                compute_units_consumed: None,
+                            };
+                            Some(VersionedTransactionWithStatusMeta {
+                                transaction: versioned_transaction,
+                                meta: default_meta,
+                            })
+                        } else {
+                            // Drop the transaction if empty metadata is not allowed
+                            None
+                        }
+                    }
+                    TransactionWithStatusMeta::Complete(tx) => Some(tx),
+                }
             })
             .collect();
 
