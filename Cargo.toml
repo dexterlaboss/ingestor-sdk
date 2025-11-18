@@ -8,6 +8,9 @@ members = [
     "storage-writer",
     "storage-utils",
     "storage-proto-tx",
+    "bigtable-reader",
+    "bigtable-writer",
+    "bigtable-shared",
 ]
 
 resolver = "2"
@@ -122,6 +125,9 @@ solana-sysvar = "=2.2.1"
 solana-serde = "=2.2.1"
 solana-instruction = "=2.2.1"
 solana-reserved-account-keys = "=2.2.1"
+solana-time-utils = "=2.2.1"
+solana-keypair = "=2.2.1"
+solana-system-transaction = "=2.2.1"
 
 solana-account-decoder-client-types = "=2.2.0"
 solana-transaction-status-client-types = "=2.2.0"
@@ -133,3 +139,6 @@ solana-hbase-reader = { path = "hbase-reader", version = "=2.1.4" }
 solana-hbase-writer = { path = "hbase-writer", version = "=2.1.4" }
 solana-block-decoder = { path = "block-decoder", version = "=2.1.4" }
 dexter-storage-proto-tx = { path = "storage-proto-tx", version = "=2.1.4" }
+solana-bigtable-shared = { path = "bigtable-shared", version = "=2.1.4" }
+solana-bigtable-reader = { path = "bigtable-reader", version = "=2.1.4" }
+solana-bigtable-writer = { path = "bigtable-writer", version = "=2.1.4" }

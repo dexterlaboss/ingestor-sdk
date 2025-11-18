@@ -51,7 +51,7 @@ features = ["rt-multi-thread", "macros", "io-util"]
 version = "1.11.0"
 
 [dependencies.rdkafka]
-features = ["cmake-build", "gssapi", "ssl", "sasl", "tokio"]
+features = ["gssapi", "ssl", "sasl", "tokio"]
 version = "0.29.0"
 # git = "https://github.com/fede1024/rust-rdkafka"
 # rev = "65520c820565f9882475cc29cd6d149940515324"

@@ -1,0 +1,527 @@
+use {
+    crate::bigtable,
+    crate::bigtable::RowKey,
+    crate::{
+        storage_config::LedgerStorageConfig,
+        storage_stats::LedgerStorageStats,
+    },
+    solana_bigtable_shared::{
+        CredentialType,
+    },
+    async_trait::async_trait,
+    log::*,
+    solana_clock::{
+        Slot,
+    },
+    solana_pubkey::{
+        Pubkey,
+    },
+    solana_signature::{
+        Signature,
+    },
+    solana_storage_proto::convert::{generated, tx_by_addr},
+    solana_transaction_status::{
+        ConfirmedBlock,
+        ConfirmedTransactionStatusWithSignature,
+        ConfirmedTransactionWithStatusMeta,
+        TransactionByAddrInfo,
+    },
+    solana_transaction_status_client_types::{
+        TransactionStatus,
+    },
+    solana_storage_reader::{
+        Error, Result, LedgerStorageAdapter,
+        StoredConfirmedBlock,
+        LegacyTransactionByAddrInfo,
+    },
+    solana_storage_utils::{
+        tx_info::TransactionInfo,
+        slot_to_blocks_key,
+        slot_to_tx_by_addr_key,
+        key_to_slot,
+    },
+    std::{
+        collections::{HashMap, HashSet},
+        convert::TryInto,
+        sync::{
+            Arc,
+        },
+        time::Duration,
+    },
+};
+
+impl std::convert::From<bigtable::Error> for Error {
+    fn from(err: bigtable::Error) -> Self {
+        Self::StorageBackendError(Box::new(err))
+    }
+}
+
+
+
+#[derive(Clone)]
+pub struct LedgerStorage {
+    connection: bigtable::BigTableConnection,
+    stats: Arc<LedgerStorageStats>,
+}
+
+impl LedgerStorage {
+    pub async fn new(
+        read_only: bool,
+        timeout: Option<std::time::Duration>,
+        credential_path: Option<String>,
+    ) -> Result<Self> {
+        Self::new_with_config(LedgerStorageConfig {
+            read_only,
+            timeout,
+            credential_type: CredentialType::Filepath(credential_path),
+            ..LedgerStorageConfig::default()
+        })
+            .await
+    }
+
+    pub fn new_for_emulator(
+        instance_name: &str,
+        app_profile_id: &str,
+        endpoint: &str,
+        timeout: Option<Duration>,
+    ) -> Result<Self> {
+        let stats = Arc::new(LedgerStorageStats::default());
+        Ok(Self {
+            connection: bigtable::BigTableConnection::new_for_emulator(
+                instance_name,
+                app_profile_id,
+                endpoint,
+                timeout,
+            )?,
+            stats,
+        })
+    }
+
+    pub async fn new_with_config(config: LedgerStorageConfig) -> Result<Self> {
+        let stats = Arc::new(LedgerStorageStats::default());
+        let LedgerStorageConfig {
+            read_only,
+            timeout,
+            instance_name,
+            app_profile_id,
+            credential_type,
+        } = config;
+        let connection = bigtable::BigTableConnection::new(
+            instance_name.as_str(),
+            app_profile_id.as_str(),
+            read_only,
+            timeout,
+            credential_type,
+        )
+            .await?;
+        Ok(Self { stats, connection })
+    }
+
+    pub async fn new_with_stringified_credential(credential: String) -> Result<Self> {
+        Self::new_with_config(LedgerStorageConfig {
+            credential_type: CredentialType::Stringified(credential),
+            ..LedgerStorageConfig::default()
+        })
+            .await
+    }
+
+    // Fetches and gets a vector of confirmed blocks via a multirow fetch
+    pub async fn get_confirmed_blocks_with_data<'a>(
+        &self,
+        slots: &'a [Slot],
+    ) -> Result<impl Iterator<Item = (Slot, ConfirmedBlock)> + 'a> {
+        trace!(
+            "LedgerStorage::get_confirmed_blocks_with_data request received: {:?}",
+            slots
+        );
+        self.stats.increment_num_queries();
+        let mut bigtable = self.connection.client();
+        let row_keys = slots.iter().copied().map(|slot| slot_to_blocks_key(slot, false));
+        let data = bigtable
+            .get_protobuf_or_bincode_cells("blocks", row_keys)
+            .await?
+            .filter_map(
+                |(row_key, block_cell_data): (
+                    RowKey,
+                    bigtable::CellData<StoredConfirmedBlock, generated::ConfirmedBlock>,
+                )| {
+                    let block = match block_cell_data {
+                        bigtable::CellData::Bincode(block) => block.into(),
+                        bigtable::CellData::Protobuf(block) => block.try_into().ok()?,
+                    };
+                    Some((key_to_slot(&row_key).unwrap(), block))
+                },
+            );
+        Ok(data)
+    }
+
+    /// Does the confirmed block exist in the Bigtable
+    pub async fn confirmed_block_exists(&self, slot: Slot) -> Result<bool> {
+        trace!(
+            "LedgerStorage::confirmed_block_exists request received: {:?}",
+            slot
+        );
+        self.stats.increment_num_queries();
+        let mut bigtable = self.connection.client();
+
+        let block_exists = bigtable
+            .row_key_exists("blocks", slot_to_blocks_key(slot, false))
+            .await?;
+
+        Ok(block_exists)
+    }
+
+    // Fetches and gets a vector of confirmed transactions via a multirow fetch
+    pub async fn get_confirmed_transactions(
+        &self,
+        signatures: &[Signature],
+    ) -> Result<Vec<ConfirmedTransactionWithStatusMeta>> {
+        trace!(
+            "LedgerStorage::get_confirmed_transactions request received: {:?}",
+            signatures
+        );
+        self.stats.increment_num_queries();
+        let mut bigtable = self.connection.client();
+
+        // Fetch transactions info
+        let keys = signatures.iter().map(|s| s.to_string()).collect::<Vec<_>>();
+        let cells = bigtable
+            .get_bincode_cells::<TransactionInfo>("tx", &keys)
+            .await?;
+
+        // Collect by slot
+        let mut order: Vec<(Slot, u32, String)> = Vec::new();
+        let mut slots: HashSet<Slot> = HashSet::new();
+        for cell in cells {
+            if let (signature, Ok(TransactionInfo { slot, index, .. })) = cell {
+                order.push((slot, index, signature));
+                slots.insert(slot);
+            }
+        }
+
+        // Fetch blocks
+        let blocks = self
+            .get_confirmed_blocks_with_data(&slots.into_iter().collect::<Vec<_>>())
+            .await?
+            .collect::<HashMap<_, _>>();
+
+        // Extract transactions
+        Ok(order
+            .into_iter()
+            .filter_map(|(slot, index, signature)| {
+                blocks.get(&slot).and_then(|block| {
+                    block
+                        .transactions
+                        .get(index as usize)
+                        .and_then(|tx_with_meta| {
+                            if tx_with_meta.transaction_signature().to_string() != *signature {
+                                warn!(
+                                    "Transaction info or confirmed block for {} is corrupt",
+                                    signature
+                                );
+                                None
+                            } else {
+                                Some(ConfirmedTransactionWithStatusMeta {
+                                    slot,
+                                    tx_with_meta: tx_with_meta.clone(),
+                                    block_time: block.block_time,
+                                })
+                            }
+                        })
+                })
+            })
+            .collect::<Vec<_>>())
+    }
+}
+
+#[async_trait]
+impl LedgerStorageAdapter for LedgerStorage {
+    /// Return the available slot that contains a block
+    async fn get_first_available_block(&self) -> Result<Option<Slot>> {
+        trace!("LedgerStorage::get_first_available_block request received");
+        self.stats.increment_num_queries();
+        let mut bigtable = self.connection.client();
+        let blocks = bigtable.get_row_keys("blocks", None, None, 1).await?;
+        if blocks.is_empty() {
+            return Ok(None);
+        }
+        Ok(key_to_slot(&blocks[0]))
+    }
+
+    /// Fetch the next slots after the provided slot that contains a block
+    ///
+    /// start_slot: slot to start the search from (inclusive)
+    /// limit: stop after this many slots have been found
+    async fn get_confirmed_blocks(&self, start_slot: Slot, limit: usize) -> Result<Vec<Slot>> {
+        trace!(
+            "LedgerStorage::get_confirmed_blocks request received: {:?} {:?}",
+            start_slot,
+            limit
+        );
+        self.stats.increment_num_queries();
+        let mut bigtable = self.connection.client();
+        let blocks = bigtable
+            .get_row_keys(
+                "blocks",
+                Some(slot_to_blocks_key(start_slot, false)),
+                None,
+                limit as i64,
+            )
+            .await?;
+        Ok(blocks.into_iter().filter_map(|s| key_to_slot(&s)).collect())
+    }
+
+    /// Fetch the confirmed block from the desired slot
+    async fn get_confirmed_block(&self, slot: Slot /*, _use_cache: bool*/) -> Result<ConfirmedBlock> {
+        trace!(
+            "LedgerStorage::get_confirmed_block request received: {:?}",
+            slot
+        );
+        self.stats.increment_num_queries();
+        let mut bigtable = self.connection.client();
+        let block_cell_data = bigtable
+            .get_protobuf_or_bincode_cell::<StoredConfirmedBlock, generated::ConfirmedBlock>(
+                "blocks",
+                slot_to_blocks_key(slot, false),
+            )
+            .await
+            .map_err(|err| match err {
+                bigtable::Error::RowNotFound => Error::BlockNotFound(slot),
+                _ => err.into(),
+            })?;
+        Ok(match block_cell_data {
+            bigtable::CellData::Bincode(block) => block.into(),
+            bigtable::CellData::Protobuf(block) => block.try_into().map_err(|_err| {
+                bigtable::Error::ObjectCorrupt(format!("blocks/{}", slot_to_blocks_key(slot, false)))
+            })?,
+        })
+    }
+
+    async fn get_signature_status(&self, signature: &Signature) -> Result<TransactionStatus> {
+        trace!(
+            "LedgerStorage::get_signature_status request received: {:?}",
+            signature
+        );
+        self.stats.increment_num_queries();
+        let mut bigtable = self.connection.client();
+        let transaction_info = bigtable
+            .get_bincode_cell::<TransactionInfo>("tx", signature.to_string())
+            .await
+            .map_err(|err| match err {
+                bigtable::Error::RowNotFound => Error::SignatureNotFound,
+                _ => err.into(),
+            })?;
+        Ok(transaction_info.into())
+    }
+
+    async fn get_full_transaction(
+        &self,
+        signature: &Signature,
+    ) -> Result<Option<ConfirmedTransactionWithStatusMeta>> {
+        self.get_confirmed_transaction(signature).await
+    }
+
+    /// Fetch a confirmed transaction
+    async fn get_confirmed_transaction(
+        &self,
+        signature: &Signature,
+    ) -> Result<Option<ConfirmedTransactionWithStatusMeta>> {
+        trace!(
+            "LedgerStorage::get_confirmed_transaction request received: {:?}",
+            signature
+        );
+        self.stats.increment_num_queries();
+        let mut bigtable = self.connection.client();
+
+        // Figure out which block the transaction is located in
+        let TransactionInfo { slot, index, .. } = bigtable
+            .get_bincode_cell("tx", signature.to_string())
+            .await
+            .map_err(|err| match err {
+                bigtable::Error::RowNotFound => Error::SignatureNotFound,
+                _ => err.into(),
+            })?;
+
+        // Load the block and return the transaction
+        let block = self.get_confirmed_block(slot /*, true*/).await?;
+        match block.transactions.into_iter().nth(index as usize) {
+            None => {
+                // report this somewhere actionable?
+                warn!("Transaction info for {} is corrupt", signature);
+                Ok(None)
+            }
+            Some(tx_with_meta) => {
+                if tx_with_meta.transaction_signature() != signature {
+                    warn!(
+                        "Transaction info or confirmed block for {} is corrupt",
+                        signature
+                    );
+                    Ok(None)
+                } else {
+                    Ok(Some(ConfirmedTransactionWithStatusMeta {
+                        slot,
+                        tx_with_meta,
+                        block_time: block.block_time,
+                    }))
+                }
+            }
+        }
+    }
+
+    /// Get confirmed signatures for the provided address, in descending ledger order
+    ///
+    /// address: address to search for
+    /// before_signature: start with the first signature older than this one
+    /// until_signature: end with the last signature more recent than this one
+    /// limit: stop after this many signatures; if limit==0, all records in the table will be read
+    async fn get_confirmed_signatures_for_address(
+        &self,
+        address: &Pubkey,
+        before_signature: Option<&Signature>,
+        until_signature: Option<&Signature>,
+        limit: usize,
+    ) -> Result<
+        Vec<(
+            ConfirmedTransactionStatusWithSignature,
+            u32, /*slot index*/
+        )>,
+    > {
+        trace!(
+            "LedgerStorage::get_confirmed_signatures_for_address request received: {:?}",
+            address
+        );
+        self.stats.increment_num_queries();
+        let mut bigtable = self.connection.client();
+        let address_prefix = format!("{address}/");
+
+        // Figure out where to start listing from based on `before_signature`
+        let (first_slot, before_transaction_index) = match before_signature {
+            None => (Slot::MAX, 0),
+            Some(before_signature) => {
+                let TransactionInfo { slot, index, .. } = bigtable
+                    .get_bincode_cell("tx", before_signature.to_string())
+                    .await?;
+
+                (slot, index)
+            }
+        };
+
+        // Figure out where to end listing from based on `until_signature`
+        let (last_slot, until_transaction_index) = match until_signature {
+            None => (0, u32::MAX),
+            Some(until_signature) => {
+                let TransactionInfo { slot, index, .. } = bigtable
+                    .get_bincode_cell("tx", until_signature.to_string())
+                    .await?;
+
+                (slot, index)
+            }
+        };
+
+        let mut infos = vec![];
+
+        let starting_slot_tx_len = bigtable
+            .get_protobuf_or_bincode_cell::<Vec<LegacyTransactionByAddrInfo>, tx_by_addr::TransactionByAddr>(
+                "tx-by-addr",
+                format!("{}{}", address_prefix, slot_to_tx_by_addr_key(first_slot)),
+            )
+            .await
+            .map(|cell_data| {
+                match cell_data {
+                    bigtable::CellData::Bincode(tx_by_addr) => tx_by_addr.len(),
+                    bigtable::CellData::Protobuf(tx_by_addr) => tx_by_addr.tx_by_addrs.len(),
+                }
+            })
+            .unwrap_or(0);
+
+        // Return the next tx-by-addr data of amount `limit` plus extra to account for the largest
+        // number that might be flitered out
+        let tx_by_addr_data = bigtable
+            .get_row_data(
+                "tx-by-addr",
+                Some(format!(
+                    "{}{}",
+                    address_prefix,
+                    slot_to_tx_by_addr_key(first_slot),
+                )),
+                Some(format!(
+                    "{}{}",
+                    address_prefix,
+                    slot_to_tx_by_addr_key(last_slot),
+                )),
+                limit as i64 + starting_slot_tx_len as i64,
+            )
+            .await?;
+
+        'outer: for (row_key, data) in tx_by_addr_data {
+            let slot = !key_to_slot(&row_key[address_prefix.len()..]).ok_or_else(|| {
+                bigtable::Error::ObjectCorrupt(format!(
+                    "Failed to convert key to slot: tx-by-addr/{row_key}"
+                ))
+            })?;
+
+            let deserialized_cell_data = bigtable::deserialize_protobuf_or_bincode_cell_data::<
+                Vec<LegacyTransactionByAddrInfo>,
+                tx_by_addr::TransactionByAddr,
+            >(&data, "tx-by-addr", row_key.clone())?;
+
+            let mut cell_data: Vec<TransactionByAddrInfo> = match deserialized_cell_data {
+                bigtable::CellData::Bincode(tx_by_addr) => {
+                    tx_by_addr.into_iter().map(|legacy| legacy.into()).collect()
+                }
+                bigtable::CellData::Protobuf(tx_by_addr) => {
+                    tx_by_addr.try_into().map_err(|error| {
+                        bigtable::Error::ObjectCorrupt(format!(
+                            "Failed to deserialize: {}: tx-by-addr/{}",
+                            error,
+                            row_key.clone()
+                        ))
+                    })?
+                }
+            };
+
+            cell_data.reverse();
+            for tx_by_addr_info in cell_data.into_iter() {
+                // Filter out records before `before_transaction_index`
+                if slot == first_slot && tx_by_addr_info.index >= before_transaction_index {
+                    continue;
+                }
+                // Filter out records after `until_transaction_index`
+                if slot == last_slot && tx_by_addr_info.index <= until_transaction_index {
+                    continue;
+                }
+                infos.push((
+                    ConfirmedTransactionStatusWithSignature {
+                        signature: tx_by_addr_info.signature,
+                        slot,
+                        err: tx_by_addr_info.err,
+                        memo: tx_by_addr_info.memo,
+                        block_time: tx_by_addr_info.block_time,
+                    },
+                    tx_by_addr_info.index,
+                ));
+                // Respect limit
+                if infos.len() >= limit {
+                    break 'outer;
+                }
+            }
+        }
+        Ok(infos)
+    }
+
+    async fn get_latest_stored_slot(&self) -> Result<Slot> {
+        Err(Error::StorageBackendError(Box::new(std::io::Error::new(
+            std::io::ErrorKind::Other,
+            "Method not supported",
+        ))))
+    }
+
+    fn clone_box(&self) -> Box<dyn LedgerStorageAdapter> {
+        Box::new(self.clone())
+    }
+
+    // async fn get_confirmed_block_from_legacy_storage(&self, slot: Slot, _use_cache: bool) -> Result<ConfirmedBlock> {
+    //     // Placeholder implementation
+    //     Err(Error::BlockNotFound(slot))
+    // }
+}
