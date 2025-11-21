@@ -77,6 +77,7 @@ impl TryFrom<ConfirmedBlock> for VersionedConfirmedBlock {
                                 loaded_addresses: LoadedAddresses::default(),
                                 return_data: None,
                                 compute_units_consumed: None,
+                                cost_units: None,
                             };
                             Some(VersionedTransactionWithStatusMeta {
                                 transaction: versioned_transaction,

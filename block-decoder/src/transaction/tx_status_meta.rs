@@ -43,6 +43,7 @@ pub struct TransactionStatusMeta {
     pub loaded_addresses: LoadedAddresses,
     pub return_data: Option<TransactionReturnData>,
     pub compute_units_consumed: Option<u64>,
+    pub cost_units: Option<u64>,
 }
 
 
@@ -114,7 +115,7 @@ impl TryFrom<UiTransactionStatusMeta> for TransactionStatusMeta {
         };
 
         Ok(Self {
-            status: meta.status,
+            status: meta.status.map_err(Into::into),
             fee: meta.fee,
             pre_balances: meta.pre_balances,
             post_balances: meta.post_balances,
@@ -132,6 +133,10 @@ impl TryFrom<UiTransactionStatusMeta> for TransactionStatusMeta {
             loaded_addresses,
             return_data,
             compute_units_consumed,
+            cost_units: match meta.cost_units {
+                OptionSerializer::Some(cost_units) => Some(cost_units),
+                _ => None,
+            },
         })
     }
 }
@@ -152,6 +157,7 @@ impl From<TransactionStatusMeta> for solana_transaction_status_client_types::Tra
             loaded_addresses: meta.loaded_addresses.into(),
             return_data: meta.return_data.map(Into::into),
             compute_units_consumed: meta.compute_units_consumed,
+            cost_units: meta.cost_units,
         }
     }
 }
