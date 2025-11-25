@@ -168,7 +168,7 @@ impl HBase {
             BTreeMap::new()
         )?;
         // ).unwrap_or_else(|err| {
-        //     println!("scanner_open_with_scan error: {:?}", err);
+        //     debug!("scanner_open_with_scan error: {:?}", err);
         //     std::process::exit(1);
         // });
 
@@ -181,7 +181,7 @@ impl HBase {
                 rows_limit as i32
             )?;
             // ).unwrap_or_else(|err| {
-            //     println!("scanner_get_list error: {:?}", err);
+            //     debug!("scanner_get_list error: {:?}", err);
             //     std::process::exit(1);
             // });
 

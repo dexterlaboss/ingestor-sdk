@@ -42,6 +42,7 @@ use {
         Serialize,
     },
     serde_json,
+    log::{debug, info, error},
 };
 
 
@@ -203,7 +204,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let app_config = Arc::new(Config::new());
 
-    println!("Started encoder");
+    info!("Started encoder");
 
     let storage_config = LedgerStorageConfig {
         read_only: false,
@@ -218,11 +219,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     io::stdin().read_to_string(&mut buffer)?;
 
     if let Err(e) = io::stdin().read_to_string(&mut buffer) {
-        println!("Failed to read from stdin: {}", e);
+        error!("Failed to read from stdin: {}", e);
         return Err(Box::new(e) as Box<dyn std::error::Error>);
     }
 
-    println!("Encoding block");
+    info!("Encoding block");
 
     let parsed_json: Result<serde_json::Value, _> = serde_json::from_str(&buffer);
     let block_id = parsed_json.ok().and_then(|json| json["blockID"].as_u64());

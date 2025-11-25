@@ -12,6 +12,7 @@ use {
     std::{
         str::FromStr,
     },
+    log::{debug},
 };
 
 /// Collection of addresses loaded from on-chain lookup tables, split
@@ -28,12 +29,11 @@ impl TryFrom<&UiLoadedAddresses> for LoadedAddresses {
     type Error = ParsePubkeyError;
 
     fn try_from(ui_loaded_addresses: &UiLoadedAddresses) -> Result<Self, Self::Error> {
-        println!("Executing try_from conversion");
         let writable: Result<Vec<Pubkey>, _> = ui_loaded_addresses
             .writable
             .iter()
             .map(|s| {
-                println!("Parsing writable pubkey: {}", s); // Debugging
+                debug!("Parsing writable pubkey: {}", s); // Debugging
                 Pubkey::from_str(s)
             })
             .collect();
@@ -42,7 +42,7 @@ impl TryFrom<&UiLoadedAddresses> for LoadedAddresses {
             .readonly
             .iter()
             .map(|s| {
-                println!("Parsing readonly pubkey: {}", s); // Debugging
+                debug!("Parsing readonly pubkey: {}", s); // Debugging
                 Pubkey::from_str(s)
             })
             .collect();

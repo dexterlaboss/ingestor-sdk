@@ -631,7 +631,6 @@ impl<F: FnMut(Request<()>) -> InterceptedRequestResult> BigTable<F> {
             for entry in res.entries {
                 if let Some(status) = entry.status {
                     if status.code != 0 {
-                        eprintln!("delete_rows error {}: {}", status.code, status.message);
                         warn!("delete_rows error {}: {}", status.code, status.message);
                         return Err(Error::RowDeleteFailed);
                     }
@@ -685,7 +684,6 @@ impl<F: FnMut(Request<()>) -> InterceptedRequestResult> BigTable<F> {
             for entry in res.entries {
                 if let Some(status) = entry.status {
                     if status.code != 0 {
-                        eprintln!("put_row_data error {}: {}", status.code, status.message);
                         warn!("put_row_data error {}: {}", status.code, status.message);
                         return Err(Error::RowWriteFailed);
                     }

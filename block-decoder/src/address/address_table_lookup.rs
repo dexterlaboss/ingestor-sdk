@@ -117,7 +117,7 @@ mod tests {
         };
 
         let serialized = serde_json::to_string(&lookup).unwrap();
-        // println!("Serialized JSON: {}", serialized);
+        // debug!("Serialized JSON: {}", serialized);
 
         // Build the 32 zeros with a local variable
         let zeros = vec![0u8; 32];

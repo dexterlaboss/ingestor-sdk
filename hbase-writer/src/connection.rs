@@ -19,6 +19,7 @@ use {
         },
         transport::{TBufferedReadTransport, TBufferedWriteTransport, TIoChannel, TTcpChannel},
     },
+    log::{debug, info},
 };
 
 #[derive(Clone)]
@@ -33,7 +34,7 @@ impl HBaseConnection {
         _read_only: bool,
         timeout: Option<Duration>,
     ) -> Self {
-        println!("Connecting to HBase at address {}", address.to_string());
+        info!("Connecting to HBase at address {}", address.to_string());
 
         Self {
             address: address.to_string(),
