@@ -117,7 +117,7 @@ solana-short-vec = "3.0.10"
 solana-clock = "=3.0.0"
 solana-hash = "=3.0.0"
 #solana-sha256-hasher = "3.0.0"
-solana-message = "=3.0.0"
+solana-message = "=3.0.1"
 solana-signature = { version = "3.1.0", default-features = false }
 solana-transaction = "=3.0.0"
 solana-transaction-error = "=3.0.0"
