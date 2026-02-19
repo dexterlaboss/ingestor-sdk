@@ -145,4 +145,4 @@ solana-bigtable-reader = { path = "bigtable-reader", version = "=3.1.8" }
 solana-bigtable-writer = { path = "bigtable-writer", version = "=3.1.8" }
 
 [workspace.dependency-overrides]
-solana-sha256-hasher = "3.1.0"
+solana-sha256-hasher = "=3.1.0"
