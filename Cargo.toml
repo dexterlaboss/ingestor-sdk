@@ -16,7 +16,7 @@ members = [
 resolver = "2"
 
 [workspace.package]
-version = "3.0.3"
+version = "3.1.8"
 authors = ["Aurimas Narkevicius <aurimas.n@dexterlab.com>"]
 repository = "https://github.com/dexterlaboss/ingestor-sdk"
 homepage = "https://dexterlab.com/"
@@ -100,49 +100,49 @@ url = "2.3.1"
 nix = "0.26.2"
 caps = "0.5.5"
 
-solana-clap-utils = "=3.0.10"
-solana-account-decoder = "=3.0.10"
-solana-clap-v3-utils = "=3.0.10"
+solana-clap-utils = "=3.1.8"
+solana-account-decoder = "=3.1.8"
+solana-clap-v3-utils = "=3.1.8"
 solana-logger = "=3.0.0"
-solana-rayon-threadlimit = "=3.0.10"
-solana-rpc-client-api = "=3.0.10"
-solana-send-transaction-service = "=3.0.10"
-solana-transaction-status = "=3.0.10"
+solana-rayon-threadlimit = "=3.1.8"
+solana-rpc-client-api = "=3.1.8"
+solana-send-transaction-service = "=3.1.8"
+solana-transaction-status = "=3.1.8"
 solana-program = { version = "3.0.0", default-features = false }
-solana-version = "=3.0.10"
-solana-storage-proto = "=3.0.10"
+solana-version = "=3.1.8"
+solana-storage-proto = "=3.1.8"
 
-solana-pubkey = "=3.0.0"
-solana-short-vec = "3.0.10"
+solana-pubkey = { version = "3.0.0", default-features = false }
+solana-short-vec = "3.0.0"
 solana-clock = "=3.0.0"
-solana-hash = "=3.0.0"
-#solana-sha256-hasher = "3.0.0"
+solana-hash = "=3.1.0"
+#solana-sha256-hasher = "3.1.0"
 solana-message = "=3.0.1"
 solana-signature = { version = "3.1.0", default-features = false }
-solana-transaction = "=3.0.1"
+solana-transaction = "=3.0.2"
 solana-transaction-error = "=3.0.0"
-solana-transaction-context = { version = "=3.0.10", features = ["bincode"] }
+solana-transaction-context = { version = "=3.1.8", features = ["bincode"] }
 solana-sysvar = "=3.0.0"
 solana-serde = "=3.0.0"
 solana-instruction = "=3.0.0"
-agave-reserved-account-keys = "=3.0.10"
+agave-reserved-account-keys = "=3.1.8"
 solana-time-utils = "=3.0.0"
-solana-keypair = "=3.0.0"
+solana-keypair = "=3.0.1"
 solana-system-transaction = "=3.0.0"
 
-solana-account-decoder-client-types = "=3.0.10"
-solana-transaction-status-client-types = "=3.0.10"
+solana-account-decoder-client-types = "=3.1.8"
+solana-transaction-status-client-types = "=3.1.8"
 
-solana-storage-reader = { path = "storage-reader", version = "=3.0.3" }
-solana-storage-writer = { path = "storage-writer", version = "=3.0.3" }
-solana-storage-utils = { path = "storage-utils", version = "=3.0.3" }
-solana-hbase-reader = { path = "hbase-reader", version = "=3.0.3" }
-solana-hbase-writer = { path = "hbase-writer", version = "=3.0.3" }
-solana-block-decoder = { path = "block-decoder", version = "=3.0.3" }
-dexter-storage-proto-tx = { path = "storage-proto-tx", version = "=3.0.3" }
-solana-bigtable-shared = { path = "bigtable-shared", version = "=3.0.3" }
-solana-bigtable-reader = { path = "bigtable-reader", version = "=3.0.3" }
-solana-bigtable-writer = { path = "bigtable-writer", version = "=3.0.3" }
+solana-storage-reader = { path = "storage-reader", version = "=3.1.8" }
+solana-storage-writer = { path = "storage-writer", version = "=3.1.8" }
+solana-storage-utils = { path = "storage-utils", version = "=3.1.8" }
+solana-hbase-reader = { path = "hbase-reader", version = "=3.1.8" }
+solana-hbase-writer = { path = "hbase-writer", version = "=3.1.8" }
+solana-block-decoder = { path = "block-decoder", version = "=3.1.8" }
+dexter-storage-proto-tx = { path = "storage-proto-tx", version = "=3.1.8" }
+solana-bigtable-shared = { path = "bigtable-shared", version = "=3.1.8" }
+solana-bigtable-reader = { path = "bigtable-reader", version = "=3.1.8" }
+solana-bigtable-writer = { path = "bigtable-writer", version = "=3.1.8" }
 
 [workspace.dependency-overrides]
-solana-sha256-hasher = "=3.0.0"
+solana-sha256-hasher = "3.1.0"
