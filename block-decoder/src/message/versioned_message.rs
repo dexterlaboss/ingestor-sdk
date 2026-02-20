@@ -19,7 +19,7 @@ use {
         Hash,
     },
     serde::{
-        de::{self, Deserializer, SeqAccess, Visitor},
+        de::{self, Deserializer, SeqAccess, Visitor, Unexpected},
         ser::{SerializeTuple, Serializer},
         Deserialize, Serialize,
     },
@@ -66,6 +66,7 @@ enum MessagePrefix {
     Versioned(u8),
 }
 
+// https://github.com/anza-xyz/solana-sdk/blob/message%40v3.0.1/message/src/versions/mod.rs#L206
 impl<'de> Deserialize<'de> for MessagePrefix {
     fn deserialize<D>(deserializer: D) -> Result<MessagePrefix, D::Error>
     where
@@ -73,14 +74,23 @@ impl<'de> Deserialize<'de> for MessagePrefix {
     {
         struct PrefixVisitor;
 
-        impl<'de> Visitor<'de> for PrefixVisitor {
+        impl Visitor<'_> for PrefixVisitor {
             type Value = MessagePrefix;
 
             fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
                 formatter.write_str("message prefix byte")
             }
 
-            fn visit_u8<E>(self, byte: u8) -> Result<MessagePrefix, E> {
+            // Serde's integer visitors bubble up to u64 so check the prefix
+            // with this function instead of visit_u8. This approach is
+            // necessary because serde_json directly calls visit_u64 for
+            // unsigned integers.
+            fn visit_u64<E: de::Error>(self, value: u64) -> Result<MessagePrefix, E> {
+                if value > u8::MAX as u64 {
+                    Err(de::Error::invalid_type(Unexpected::Unsigned(value), &self))?;
+                }
+
+                let byte = value as u8;
                 if byte & MESSAGE_VERSION_PREFIX != 0 {
                     Ok(MessagePrefix::Versioned(byte & !MESSAGE_VERSION_PREFIX))
                 } else {
