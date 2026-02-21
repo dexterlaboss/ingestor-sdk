@@ -33,6 +33,7 @@ use {
     solana_transaction_status_client_types::{
         UiMessage,
         UiTransactionEncoding,
+        TransactionBinaryEncoding,
     },
     base64::{Engine, prelude::BASE64_STANDARD},
 };
@@ -84,27 +85,41 @@ impl DecodableWithMeta for VersionedTransaction {
     type Encoded = EncodedTransaction;
     type Decoded = VersionedTransaction;
 
+    // https://github.com/anza-xyz/agave/blob/v3.1.8/transaction-status/src/lib.rs#L632
     fn decode_with_meta(
         encoded: Self::Encoded,
         decoding: UiTransactionEncoding,
-        version: Option<TransactionVersion>
+        version: Option<TransactionVersion>,
     ) -> Result<Self::Decoded, DecodeError> {
         match decoding {
             UiTransactionEncoding::Binary | UiTransactionEncoding::Base58 => {
-                if let EncodedTransaction::LegacyBinary(encoded_string) = encoded {
-                    let decoded_bytes = bs58::decode(encoded_string).into_vec().unwrap();
-                    let decoded: Self::Decoded =
-                        bincode::deserialize(&decoded_bytes).map_err(|_| DecodeError::DeserializeFailed)?;
+                if let EncodedTransaction::LegacyBinary(encoded_string)
+                | EncodedTransaction::Binary(
+                    encoded_string,
+                    TransactionBinaryEncoding::Base58,
+                ) = encoded
+                {
+                    let decoded_bytes = bs58::decode(encoded_string)
+                        .into_vec()
+                        .map_err(|_| DecodeError::DeserializeFailed)?;
+                    let decoded: Self::Decoded = bincode::deserialize(&decoded_bytes)
+                        .map_err(|_| DecodeError::DeserializeFailed)?;
                     Ok(decoded)
                 } else {
                     Err(DecodeError::UnsupportedEncoding)
                 }
             }
             UiTransactionEncoding::Base64 => {
-                if let EncodedTransaction::Binary(encoded_string, _) = encoded {
-                    let decoded_bytes = BASE64_STANDARD.decode(encoded_string).unwrap();
-                    let decoded: Self::Decoded =
-                        bincode::deserialize(&decoded_bytes).map_err(|_| DecodeError::DeserializeFailed)?;
+                if let EncodedTransaction::Binary(
+                    encoded_string,
+                    TransactionBinaryEncoding::Base64,
+                ) = encoded
+                {
+                    let decoded_bytes = BASE64_STANDARD
+                        .decode(encoded_string)
+                        .map_err(|_| DecodeError::DeserializeFailed)?;
+                    let decoded: Self::Decoded = bincode::deserialize(&decoded_bytes)
+                        .map_err(|_| DecodeError::DeserializeFailed)?;
                     Ok(decoded)
                 } else {
                     Err(DecodeError::UnsupportedEncoding)
@@ -124,6 +139,7 @@ impl DecodableWithMeta for VersionedTransaction {
                 .collect::<Result<Vec<_>, _>>()
                 .map_err(|err| DecodeError::ParseSignatureFailed(err))?;
 
+            // `EncodedTransaction::Json` encoding outputs `UiMessage::Raw`: https://github.com/anza-xyz/agave/blob/v3.1.8/transaction-status/src/lib.rs#L663
             let message = match ui_transaction.message {
                 UiMessage::Raw(_) => {
                     match version {
@@ -390,6 +406,32 @@ mod tests {
     }
 
     #[test]
+    fn test_decode_versioned_transaction_success_base58() {
+        // Serialize a valid VersionedTransaction
+        let raw_bytes = bincode::serialize(&VersionedTransaction {
+            signatures: vec![Signature::default()],
+            message: VersionedMessage::Legacy(Message::default()),
+        })
+        .expect("Failed to serialize VersionedTransaction");
+
+        // Correctly encode it into base58
+        let encoded_string = bs58::encode(&raw_bytes).into_string();
+
+        // Ensure we use the correct encoding variant
+        let encoded = EncodedTransaction::Binary(encoded_string, TransactionBinaryEncoding::Base58);
+
+        let result =
+            VersionedTransaction::decode_with_meta(encoded, UiTransactionEncoding::Base58, None);
+
+        // Ensure that decoding works as expected
+        assert!(
+            result.is_ok(),
+            "Expected successful decoding, but got {:?}",
+            result
+        );
+    }
+
+    #[test]
     fn test_decode_versioned_transaction_invalid_base58_format() {
         let encoded = EncodedTransaction::LegacyBinary("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".to_string());
         let result = VersionedTransaction::decode_with_meta(encoded, UiTransactionEncoding::Base58, None);
@@ -469,7 +511,6 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "called `Result::unwrap()` on an `Err` value: InvalidByte")]
     fn test_decode_versioned_transaction_invalid_base64() {
         // Provide an invalid base64 string
         let encoded = EncodedTransaction::Binary(
@@ -477,17 +518,15 @@ mod tests {
             TransactionBinaryEncoding::Base64,
         );
 
-        // Since `BASE64_STANDARD.decode()` fails immediately, the function panics.
-        // This test should confirm that it panics as expected.
-        let _ = VersionedTransaction::decode_with_meta(
+        let result = VersionedTransaction::decode_with_meta(
             encoded,
             UiTransactionEncoding::Base64,
             None,
         );
+        assert!(matches!(result, Err(DecodeError::DeserializeFailed)));
     }
 
     #[test]
-    #[should_panic(expected = "called `Result::unwrap()` on an `Err` value: InvalidByte")]
     fn test_decode_versioned_transaction_invalid_base64_v0() {
         // Provide an invalid base64 string
         let encoded = EncodedTransaction::Binary(
@@ -495,13 +534,12 @@ mod tests {
             TransactionBinaryEncoding::Base64,
         );
 
-        // Since `BASE64_STANDARD.decode()` fails immediately, the function panics.
-        // This test should confirm that it panics as expected.
-        let _ = VersionedTransaction::decode_with_meta(
+        let result = VersionedTransaction::decode_with_meta(
             encoded,
             UiTransactionEncoding::Base64,
             Some(TransactionVersion::Number(0)),
         );
+        assert!(matches!(result, Err(DecodeError::DeserializeFailed)));
     }
 
     #[test]
