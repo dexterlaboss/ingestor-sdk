@@ -406,6 +406,32 @@ mod tests {
     }
 
     #[test]
+    fn test_decode_versioned_transaction_success_base58() {
+        // Serialize a valid VersionedTransaction
+        let raw_bytes = bincode::serialize(&VersionedTransaction {
+            signatures: vec![Signature::default()],
+            message: VersionedMessage::Legacy(Message::default()),
+        })
+        .expect("Failed to serialize VersionedTransaction");
+
+        // Correctly encode it into base58
+        let encoded_string = bs58::encode(&raw_bytes).into_string();
+
+        // Ensure we use the correct encoding variant
+        let encoded = EncodedTransaction::Binary(encoded_string, TransactionBinaryEncoding::Base58);
+
+        let result =
+            VersionedTransaction::decode_with_meta(encoded, UiTransactionEncoding::Base58, None);
+
+        // Ensure that decoding works as expected
+        assert!(
+            result.is_ok(),
+            "Expected successful decoding, but got {:?}",
+            result
+        );
+    }
+
+    #[test]
     fn test_decode_versioned_transaction_invalid_base58_format() {
         let encoded = EncodedTransaction::LegacyBinary("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".to_string());
         let result = VersionedTransaction::decode_with_meta(encoded, UiTransactionEncoding::Base58, None);
